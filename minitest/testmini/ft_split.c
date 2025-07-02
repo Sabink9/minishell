@@ -1,37 +1,23 @@
-#include "mini.h"
+#include <stdlib.h>
 
-int	count_word(const char *s, char c)
+int	is_quote(char c)
 {
-	int	i = 0;
-	int	count = 0;
-	char	quote = 0;
-
-	if (!s || *s == 0)
-		return (0);
-	while (s[i])
-	{
-		while (s[i] == c)
-			i++;
-		if (s[i] == '\0')
-			break;
-		count++;
-		if (s[i] == '\'' || s[i] == '"')
-		{
-			quote = s[i++];
-			while (s[i] && s[i] != quote)
-				i++;
-			if (s[i] == quote)
-				i++;
-		}
-		else
-		{
-			while (s[i] && s[i] != c && s[i] != '\'' && s[i] != '"')
-				i++;
-		}
-	}
-	return (count);
+	return (c == '\'' || c == '\"');
 }
 
+int	is_escaped(char *string, int i)
+{
+	int	count;
+
+	count = 0;
+	i--;
+	while (i >= 0 && string[i] == '\\')
+	{
+		count++;
+		i--;
+	}
+	return (count % 2);
+}
 
 void	free_tab(char **tab)
 {
@@ -48,79 +34,151 @@ void	free_tab(char **tab)
 	free(tab);
 }
 
-static int	len_word_quote(const char *s, char c)
+int	count_words(char *string, char sep)
 {
-	int		i = 0;
+	int	i;
+	int	count;
+	int	in_word;
 	char	quote;
 
-	if (s[i] == '\'' || s[i] == '"')
+	i = 0;
+	count = 0;
+	in_word = 0;
+	quote = 0;
+	while (string[i])
 	{
-		quote = s[i++];
-		while (s[i] && s[i] != quote)
-			i++;
-		if (s[i] == quote)
-			i++;
+		if (is_quote(string[i]) && !is_escaped(string, i))
+		{
+			if (quote == 0)
+				quote = string[i];
+			else if (quote == string[i])
+				quote = 0;
+		}
+		if (string[i] != sep && in_word == 0)
+		{
+			in_word = 1;
+			count++;
+		}
+		else if (string[i] == sep && quote == 0)
+			in_word = 0;
+		i++;
 	}
-	else
-	{
-		while (s[i] && s[i] != c && s[i] != '\'' && s[i] != '"')
-			i++;
-	}
-	return (i);
+	return (count);
 }
 
-int	creat_tab(const char *s, char c, char **tab)
+int	len_word_loop(char *string, char sep, int *i, char *quote)
 {
-	int		i = 0;
-	int		j = 0;
-	int		k;
-	char	quote;
+	int	len;
 
-	while (s[i])
+	len = 0;
+	while (string[*i])
 	{
-		while (s[i] == c)
-			i++;
-		if (s[i] == '\0')
-			break;
-
-		k = 0;
-		int len = len_word_quote(s + i, c);
-		tab[j] = malloc(len + 1);
-		if (!tab[j])
-			return (free_tab(tab), 1);
-
-		if (s[i] == '\'' || s[i] == '"')
+		if (is_quote(string[*i]) && !is_escaped(string, *i))
 		{
-			quote = s[i++];
-			while (s[i] && s[i] != quote)
-				tab[j][k++] = s[i++];
-			if (s[i] == quote)
-				i++;
+			if (*quote == 0)
+				*quote = string[*i];
+			else if (*quote == string[*i])
+				*quote = 0;
 		}
+		else if (string[*i] == sep && *quote == 0)
+			break ;
+		len++;
+		(*i)++;
+	}
+	return (len);
+}
+
+int	len_word(char *string, char sep, int i)
+{
+	char	quote;
+	int	tmp;
+
+	quote = 0;
+	tmp = i;
+	return (len_word_loop(string, sep, &tmp, &quote));
+}
+
+int	copy_word_loop(char *dst, char *string, int j, char *quote)
+{
+	int	i;
+
+	i = 0;
+	while (string[j])
+	{
+		if (is_quote(string[j]) && !is_escaped(string, j))
+		{
+			if (*quote == 0)
+				*quote = string[j];
+			else if (*quote == string[j])
+				*quote = 0;
+			j++;
+		}
+		else if (string[j] == '\\' && string[j + 1])
+		{
+			dst[i++] = string[j++];
+			dst[i++] = string[j++];
+		}
+		else if (string[j] == ' ' && *quote == 0)
+			break ;
 		else
-		{
-			while (s[i] && s[i] != c && s[i] != '\'' && s[i] != '"')
-				tab[j][k++] = s[i++];
-		}
-		tab[j][k] = '\0';
-		j++;
+			dst[i++] = string[j++];
 	}
-	return (0);
+	dst[i] = '\0';
+	return (j);
 }
 
-char	**ft_split(char const *s, char c)
+int	copy_word(char *dst, char *string, int start)
 {
-	int		word_count;
-	char	**tab_of_tab;
+	int		j;
+	char	quote;
 
-	if (!s)
+	j = start;
+	quote = 0;
+	return (copy_word_loop(dst, string, j, &quote));
+}
+
+int	create_tab(char **split, char *string, char sep)
+{
+	int	i;
+	int	k;
+	int	word_len;
+	int	offset;
+
+	i = 0;
+	k = 0;
+	while (string[i])
+	{
+		while (string[i] == sep)
+			i++;
+		if (!string[i])
+			break ;
+		word_len = len_word(string, sep, i);
+		split[k] = malloc(sizeof(char) * (word_len + 1));
+		if (!split[k])
+		{
+			free_tab(split);
+			return (0);
+		}
+		offset = copy_word(split[k], string, i);
+		i = offset;
+		k++;
+	}
+	split[k] = NULL;
+	return (1);
+}
+
+char	**ft_split(char *string, char sep)
+{
+	char	**split;
+	int	count;
+
+	if (!string)
 		return (NULL);
-	word_count = count_word(s, c);
-	tab_of_tab = (char **)malloc((word_count + 1) * sizeof(char *));
-	if (!tab_of_tab)
+	count = count_words(string, sep);
+	split = malloc(sizeof(char *) * (count + 1));
+	if (!split)
 		return (NULL);
-	if (creat_tab(s, c, tab_of_tab))
+	if (!create_tab(split, string, sep))
 		return (NULL);
-	tab_of_tab[word_count] = NULL;
-	return (tab_of_tab);
+	return (split);
 }

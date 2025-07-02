@@ -1,13 +1,18 @@
 #include "mini.h"
 
-int	ft_strlen(char *str)
+void	free_tab(char **tab)
 {
 	int	i;
 
+	if (!tab)
+		return ;
 	i = 0;
-	while (str[i])
+	while (tab[i])
+	{
+		free(tab[i]);
 		i++;
-	return (i);
+	}
+	free(tab);
 }
 
 int	count_words(char *string, char sep)
@@ -47,8 +52,17 @@ int	len_word(char *string, char sep, int i)
 	return (len);
 }
 
+void	malloc_tab(int word_len, char **split, int k)
+{
+	split[k] = malloc(sizeof(char) * (word_len + 1));
+	if (!split[k])
+	{
+		free_tab(split);
+		return (0);
+	}
+}
 
-void	create_tab(char **split, char *string, char sep)
+int	create_tab(char **split, char *string, char sep)
 {
 	int	i;
 	int	j;
@@ -64,9 +78,7 @@ void	create_tab(char **split, char *string, char sep)
 		if (string[i] == '\0')
 			break;
 		word_len = len_word(string, sep, i);
-		split[k] = malloc(sizeof(char) * (word_len + 1));
-		if (!split[k])
-			return;
+		malloc_tab(word_len, split, k);
 		j = 0;
 		while (j < word_len)
 			split[k][j++] = string[i++];
@@ -74,6 +86,7 @@ void	create_tab(char **split, char *string, char sep)
 		k++;
 	}
 	split[k] = NULL;
+	return (1);
 }
 
 char	**ft_split(char *string, char sep)
@@ -85,7 +98,8 @@ char	**ft_split(char *string, char sep)
 	split = malloc(sizeof(char *) * (count + 1));
 	if (!split)
 		return (NULL);
-	create_tab(split, string, sep);
+	if(!create_tab(split, string, sep))
+		return (NULL);
 	return(split);
 }
 #include <stdio.h>
@@ -101,5 +115,6 @@ int	main()
 		printf("%s\n", split[i]);
 		i++;
 	}
+	free_tab(split);
 	return (0);
 }
