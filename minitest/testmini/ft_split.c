@@ -1,184 +1,95 @@
 #include <stdlib.h>
 
-int	is_quote(char c)
+static int	ft_word_len(const char *s, int *i)
 {
-	return (c == '\'' || c == '\"');
-}
+	int		len = 0;
+	char	quote = 0;
 
-int	is_escaped(char *string, int i)
-{
-	int	count;
-
-	count = 0;
-	i--;
-	while (i >= 0 && string[i] == '\\')
-	{
-		count++;
-		i--;
-	}
-	return (count % 2);
-}
-
-void	free_tab(char **tab)
-{
-	int	i;
-
-	if (!tab)
-		return ;
-	i = 0;
-	while (tab[i])
-	{
-		free(tab[i]);
-		i++;
-	}
-	free(tab);
-}
-
-int	count_words(char *string, char sep)
-{
-	int	i;
-	int	count;
-	int	in_word;
-	char	quote;
-
-	i = 0;
-	count = 0;
-	in_word = 0;
-	quote = 0;
-	while (string[i])
-	{
-		if (is_quote(string[i]) && !is_escaped(string, i))
-		{
-			if (quote == 0)
-				quote = string[i];
-			else if (quote == string[i])
-				quote = 0;
-		}
-		if (string[i] != sep && in_word == 0)
-		{
-			in_word = 1;
-			count++;
-		}
-		else if (string[i] == sep && quote == 0)
-			in_word = 0;
-		i++;
-	}
-	return (count);
-}
-
-int	len_word_loop(char *string, char sep, int *i, char *quote)
-{
-	int	len;
-
-	len = 0;
-	while (string[*i])
-	{
-		if (is_quote(string[*i]) && !is_escaped(string, *i))
-		{
-			if (*quote == 0)
-				*quote = string[*i];
-			else if (*quote == string[*i])
-				*quote = 0;
-		}
-		else if (string[*i] == sep && *quote == 0)
-			break ;
-		len++;
+	while (s[*i] == ' ')
 		(*i)++;
+	if (s[*i] == '\'' || s[*i] == '"')
+	{
+		quote = s[(*i)++];
+		while (s[*i] && s[*i] != quote)
+		{
+			len++;
+			(*i)++;
+		}
+		if (s[*i] == quote)
+			(*i)++;
+	}
+	else
+	{
+		while (s[*i] && s[*i] != ' ')
+		{
+			len++;
+			(*i)++;
+		}
 	}
 	return (len);
 }
 
-int	len_word(char *string, char sep, int i)
+static char	*ft_word_dup(const char *s, int start, int len)
 {
-	char	quote;
-	int	tmp;
-
-	quote = 0;
-	tmp = i;
-	return (len_word_loop(string, sep, &tmp, &quote));
-}
-
-int	copy_word_loop(char *dst, char *string, int j, char *quote)
-{
-	int	i;
-
-	i = 0;
-	while (string[j])
-	{
-		if (is_quote(string[j]) && !is_escaped(string, j))
-		{
-			if (*quote == 0)
-				*quote = string[j];
-			else if (*quote == string[j])
-				*quote = 0;
-			j++;
-		}
-		else if (string[j] == '\\' && string[j + 1])
-		{
-			dst[i++] = string[j++];
-			dst[i++] = string[j++];
-		}
-		else if (string[j] == ' ' && *quote == 0)
-			break ;
-		else
-			dst[i++] = string[j++];
-	}
-	dst[i] = '\0';
-	return (j);
-}
-
-int	copy_word(char *dst, char *string, int start)
-{
+	char	*res;
 	int		j;
-	char	quote;
 
-	j = start;
-	quote = 0;
-	return (copy_word_loop(dst, string, j, &quote));
-}
-
-int	create_tab(char **split, char *string, char sep)
-{
-	int	i;
-	int	k;
-	int	word_len;
-	int	offset;
-
-	i = 0;
-	k = 0;
-	while (string[i])
+	res = malloc(len + 1);
+	if (!res)
+		return (NULL);
+	j = 0;
+	while (j < len)
 	{
-		while (string[i] == sep)
-			i++;
-		if (!string[i])
-			break ;
-		word_len = len_word(string, sep, i);
-		split[k] = malloc(sizeof(char) * (word_len + 1));
-		if (!split[k])
-		{
-			free_tab(split);
-			return (0);
-		}
-		offset = copy_word(split[k], string, i);
-		i = offset;
-		k++;
+		res[j] = s[start + j];
+		j++;
 	}
-	split[k] = NULL;
-	return (1);
+	res[j] = '\0';
+	return (res);
 }
 
-char	**ft_split(char *string, char sep)
+static int	ft_count_words(const char *s)
 {
-	char	**split;
-	int	count;
+	int	i = 0;
+	int	count = 0;
 
-	if (!string)
+	while (s[i])
+	{
+		if (s[i] != ' ')
+		{
+			ft_word_len(s, &i);
+			count++;
+		}
+		else
+			i++;
+	}
+	return (count);
+}
+
+char	**ft_split(const char *s)
+{
+	int		i = 0;
+	int		j = 0;
+	int		len;
+	int		start;
+	int		wc;
+	char	**res;
+
+	if (!s)
 		return (NULL);
-	count = count_words(string, sep);
-	split = malloc(sizeof(char *) * (count + 1));
-	if (!split)
+	wc = ft_count_words(s);
+	res = malloc(sizeof(char *) * (wc + 1));
+	if (!res)
 		return (NULL);
-	if (!create_tab(split, string, sep))
-		return (NULL);
-	return (split);
+	i = 0;
+	while (j < wc)
+	{
+		while (s[i] == ' ')
+			i++;
+		start = i;
+		len = ft_word_len(s, &i);
+		res[j] = ft_word_dup(s, start + (s[start] == '\'' || s[start] == '"'), len);
+		j++;
+	}
+	res[j] = NULL;
+	return (res);
 }

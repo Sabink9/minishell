@@ -1,11 +1,11 @@
 #include "mini.h"
 
-int_ft_pwd(void)
+int	ft_pwd(void)
 {
 	char	*cwd;
 
-	cdw = getcdw(NULL, 0);
-	if (cdw == NULL)
+	cwd = getcwd(NULL, 0);
+	if (cwd == NULL)
 	{
 		perror("pwd");
 		return(1);

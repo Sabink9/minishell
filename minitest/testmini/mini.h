@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-char	**ft_split(char *string, char sep);
+char	**ft_split(const char *s);
+int	ft_pwd(void);
 
 #endif
