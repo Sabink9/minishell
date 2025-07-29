@@ -93,12 +93,12 @@ char	*read_full_line(void)
 	}
 	return (line);
 }
-void	handle_command(char **split)
+t_env *handle_command(t_env *env, char **split)
 {
 	int	i = 0;
 
 	if (!split || !split[0])
-		return ;
+		return (env);
 	while (split[i])
 	{
 		printf("[split %d] = \"%s\"\n", i, split[i]);
@@ -108,15 +108,20 @@ void	handle_command(char **split)
 		ft_echo(split);
 	else if (ft_strcmp(split[0], "pwd") == 0)
 		ft_pwd();
+	else if (ft_strcmp(split[0], "export") == 0)
+		env = ft_export(env, split);
 	else
 		printf("minishell: command not found: %s\n", split[0]);
+	return (env);
 }
 
 
-int	main(void)
+
+int main(void)
 {
-	char	*line;
-	char	**split_line;
+	char *line;
+	char **split_line;
+	t_env *env = NULL;  // ta liste d'env initialisée ailleurs ou vide
 
 	while (1)
 	{
@@ -124,11 +129,13 @@ int	main(void)
 		if (!line)
 			break ;
 		split_line = ft_split(line);
-		handle_command(split_line);
+		env = handle_command(env, split_line);
 		free_split(split_line);
 		free(line);
 	}
+	free_env_list(env);
 	return (0);
 }
+
 
 
