@@ -99,11 +99,11 @@ void	handle_command(char **split)
 
 	if (!split || !split[0])
 		return ;
-	while (split[i])
-	{
-		printf("[split %d] = \"%s\"\n", i, split[i]);
-		i++;
-	}
+	// while (split[i])
+	// {
+	// 	printf("[split %d] = \"%s\"\n", i, split[i]);
+	// 	i++;
+	// }
 	if (ft_strcmp(split[0], "echo") == 0)
 		ft_echo(split);
 	else if (ft_strcmp(split[0], "pwd") == 0)
