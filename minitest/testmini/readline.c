@@ -95,15 +95,15 @@ char	*read_full_line(void)
 }
 t_env *handle_command(t_env *env, char **split)
 {
-	int	i = 0;
+	//int	i = 0;
 
 	if (!split || !split[0])
 		return (env);
-	while (split[i])
-	{
-		printf("[split %d] = \"%s\"\n", i, split[i]);
-		i++;
-	}
+	// while (split[i])
+	// {
+	// 	printf("[split %d] = \"%s\"\n", i, split[i]);
+	// 	i++;
+	// }
 	if (ft_strcmp(split[0], "echo") == 0)
 		ft_echo(split);
 	else if (ft_strcmp(split[0], "pwd") == 0)
