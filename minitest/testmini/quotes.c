@@ -52,7 +52,7 @@ int	len_word(char *string, char sep, int i)
 	return (len);
 }
 
-void	malloc_tab(int word_len, char **split, int k)
+int	malloc_tab(int word_len, char **split, int k)
 {
 	split[k] = malloc(sizeof(char) * (word_len + 1));
 	if (!split[k])
@@ -60,6 +60,7 @@ void	malloc_tab(int word_len, char **split, int k)
 		free_tab(split);
 		return (0);
 	}
+	return (1);
 }
 
 int	create_tab(char **split, char *string, char sep)
