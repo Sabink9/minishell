@@ -1,8 +1,8 @@
 #include "mini.h"
 
-int	ft_strcmp(char *s1, char *s2)
+int ft_strcmp(char *s1, char *s2)
 {
-	int	i;
+	int i;
 
 	i = 0;
 	while (s1[i] && s2[i] && s1[i] == s2[i])
@@ -10,17 +10,17 @@ int	ft_strcmp(char *s1, char *s2)
 	return (s1[i] - s2[i]);
 }
 
-void	ft_echo(char **split)
+void ft_echo(char **split)
 {
-	int	i;
-	int	no_newline;
+	int i;
+	int no_newline;
 
 	i = 1;
 	no_newline = 0;
 	if (!split[0] || ft_strcmp(split[0], "echo") != 0)
 	{
 		printf("Format : \"echo <string>\"\n");
-		return ;
+		return;
 	}
 	if (split[1] && ft_strcmp(split[1], "-n") == 0)
 	{
@@ -38,13 +38,13 @@ void	ft_echo(char **split)
 		printf("\n");
 }
 
-void	free_split(char **tab)
+void free_split(char **tab)
 {
-	int	i;
+	int i;
 
 	i = 0;
 	if (!tab)
-		return ;
+		return;
 	while (tab[i])
 	{
 		free(tab[i]);
@@ -54,10 +54,10 @@ void	free_split(char **tab)
 	free(tab);
 }
 
-int	unclosed_quote(const char *line)
+int unclosed_quote(const char *line)
 {
-	int		i;
-	char	quote;
+	int i;
+	char quote;
 
 	i = 0;
 	quote = 0;
@@ -77,11 +77,11 @@ int	unclosed_quote(const char *line)
 
 #include "mini.h"
 
-char	*ft_strjoin(char *s1, char *s2)
+char *ft_strjoin(char *s1, char *s2)
 {
-	char	*res;
-	int		i;
-	int		j;
+	char *res;
+	int i;
+	int j;
 
 	if (!s1 || !s2)
 		return (NULL);
@@ -104,18 +104,18 @@ char	*ft_strjoin(char *s1, char *s2)
 	return (res);
 }
 
-char	*read_full_line(void)
+char *read_full_line(void)
 {
-	char	*line;
-	char	*tmp;
-	char	*joined;
+	char *line;
+	char *tmp;
+	char *joined;
 
 	line = readline("$> ");
 	while (line && unclosed_quote(line))
 	{
 		tmp = readline("> ");
 		if (!tmp)
-			break ;
+			break;
 		joined = ft_strjoin(line, tmp);
 		free(line);
 		free(tmp);
@@ -126,9 +126,9 @@ char	*read_full_line(void)
 	return (line);
 }
 
-t_env	*handle_command(t_env *env, char **split)
+t_env *handle_command(t_env *env, char **split)
 {
-	//int	i = 0;
+	// int	i = 0;
 	if (!split || !split[0])
 		return (env);
 	// while (split[i])
@@ -147,67 +147,28 @@ t_env	*handle_command(t_env *env, char **split)
 	return (env);
 }
 
-void	simple_subshell(t_env *env)
-{
-	char	*line;
-	char	**split_line;
-	size_t	len;
 
-	printf("=== Sous-shell démarré ===\n");
-	while (1)
-	{
-		write(1, "$> ", 3);
-		line = NULL;
-		len = 0;
-		if (getline(&line, &len, stdin) == -1)
-		{
-			free(line);
-			break ;
-		}
-		line[strcspn(line, "\n")] = 0; // enlever le \n
-		if (strcmp(line, "exit") == 0)
-		{
-			free(line);
-			break ;
-		}
-		split_line = ft_split(line);
-		if (split_line && split_line[0])
-			env = handle_command(env, split_line);
-		free_split(split_line);
-		free(line);
-	}
-	printf("=== Sous-shell terminé ===\n");
-}
-
-int	main(void)
+int main(void)
 {
-	char	*line;
-	char	**split_line;
-	t_env	*env;
-	pid_t	pid;
+	char *line;
+	char **split_line;
+	t_env *env;
 
 	env = NULL;
 	while (1)
 	{
 		line = read_full_line();
 		if (!line)
-			break ;
+			break;
 		split_line = ft_split(line);
 		if (split_line && split_line[0])
 		{
-			if (ft_strcmp(split_line[0], "new") == 0)
+			if (ft_strcmp(split_line[0], "exit") == 0)
 			{
-				pid = fork();
-				if (pid == 0)
-				{
-					// enfant : sous-shell simplifié
-					simple_subshell(env);
-					exit(0);
-				}
-				else if (pid < 0)
-					perror("fork failed");
-				else
-					printf("Sous-shell lancé !\n");
+				free_split(split_line);
+				free_env_list(env);
+				printf("exit\n");
+				exit(0);
 			}
 			else
 				env = handle_command(env, split_line);
