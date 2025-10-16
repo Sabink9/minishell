@@ -126,7 +126,7 @@ char *read_full_line(void)
 	return (line);
 }
 
-t_env *handle_command(t_env *env, char **split)
+char **handle_command(char **env, char **split)
 {
 	// int	i = 0;
 	if (!split || !split[0])
@@ -143,39 +143,45 @@ t_env *handle_command(t_env *env, char **split)
 	else if (ft_strcmp(split[0], "export") == 0)
 		env = ft_export(env, split);
 	else
-		printf("minishell: command not found: %s\n", split[0]);
+		exec_command(split, env);
+	// else
+	// 	printf("minishell: command not found: %s\n", split[0]);
 	return (env);
 }
 
-
-int main(void)
+int main(int argc, char **argv, char **envp)
 {
 	char *line;
 	char **split_line;
-	t_env *env;
+	// t_env	*env;
 
-	env = NULL;
+	(void)argc;
+	(void)argv;
 	while (1)
 	{
 		line = read_full_line();
 		if (!line)
 			break;
+
+		if (*line)
+			add_history(line);
+
 		split_line = ft_split(line);
 		if (split_line && split_line[0])
 		{
-			if (ft_strcmp(split_line[0], "exit") == 0)
+			if (strcmp(split_line[0], "exit") == 0)
 			{
 				free_split(split_line);
-				free_env_list(env);
 				printf("exit\n");
+				rl_clear_history();
 				exit(0);
 			}
 			else
-				env = handle_command(env, split_line);
+				envp = handle_command(envp, split_line);
 		}
 		free_split(split_line);
 		free(line);
 	}
-	free_env_list(env);
-	return (0);
+	rl_clear_history();
+	return 0;
 }
