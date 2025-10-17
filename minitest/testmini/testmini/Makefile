@@ -6,6 +6,7 @@ SRCS =	ft_export.c \
 	ft_pwd.c \
 	ft_split.c \
 	path.c \
+	ft_cd.c \
 	readline.c 
 
 OBJS = $(SRCS:.c=.o)

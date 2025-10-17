@@ -1,45 +1,5 @@
 #include "mini.h"
 
-t_env *new_env_node(char *key, char *value)
-{
-    t_env *node = malloc(sizeof(t_env));
-    if (!node)
-        return NULL;
-    node->key = strdup(key);
-    node->value = strdup(value);
-    node->next = NULL;
-    return node;
-}
-
-t_env *init_env_list(char **envp)
-{
-    t_env *head = NULL;
-    t_env *current = NULL;
-    int i = 0;
-    char *eq;
-
-    while (envp[i])
-    {
-        eq = strchr(envp[i], '=');
-        if (eq)
-        {
-            *eq = '\0'; // sépare temporairement key et value
-            if (!head)
-                head = new_env_node(envp[i], eq + 1);
-            else
-            {
-                current->next = new_env_node(envp[i], eq + 1);
-            }
-            current = head;
-            while (current->next)
-                current = current->next;
-            *eq = '='; // remet le '='
-        }
-        i++;
-    }
-    return head;
-}
-
 char *get_path_from_env(char **envp)
 {
     int i = 0;

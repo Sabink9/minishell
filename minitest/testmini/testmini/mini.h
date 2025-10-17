@@ -10,17 +10,18 @@
 #include <sys/stat.h>
 #include <sys/wait.h>
 
-typedef struct s_env
-{
-	char			*key;
-	char			*value;
-	struct s_env	*next;
-}	t_env;
+// typedef struct s_env
+// {
+// 	char			*key;
+// 	char			*value;
+// 	struct s_env	*next;
+// }	t_env;
 
 char **ft_split(const char *s);
 int ft_pwd(void);
 char **ft_export(char **envp, char **args);
 void ft_echo(char **args);
+char	**ft_cd(char **args, char **envp);
 
 /* ----------------- EXEC / PATH ----------------- */
 char *get_path_from_env(char **envp);

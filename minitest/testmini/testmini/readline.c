@@ -75,7 +75,6 @@ int unclosed_quote(const char *line)
 	return (quote != 0);
 }
 
-#include "mini.h"
 
 char *ft_strjoin(char *s1, char *s2)
 {
@@ -142,6 +141,8 @@ char **handle_command(char **env, char **split)
 		ft_pwd();
 	else if (ft_strcmp(split[0], "export") == 0)
 		env = ft_export(env, split);
+	else if (ft_strcmp(split[0], "cd") == 0)
+		env = ft_cd(split, env);
 	else
 		exec_command(split, env);
 	// else
