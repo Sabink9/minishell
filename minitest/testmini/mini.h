@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 
 typedef struct s_env
 {
@@ -16,9 +17,17 @@ typedef struct s_env
 	struct s_env	*next;
 }	t_env;
 
-char	**ft_split(const char *s);
-int	ft_pwd(void);
-t_env	*ft_export(t_env *env, char **args);
-void	free_env_list(t_env *head);
+char **ft_split(const char *s);
+int ft_pwd(void);
+char **ft_export(char **envp, char **args);
+void ft_echo(char **args);
+
+/* ----------------- EXEC / PATH ----------------- */
+char *get_path_from_env(char **envp);
+char *find_executable(char *cmd, char **envp);
+void exec_command(char **args, char **envp);
+
+/* ----------------- UTILS ----------------- */
+void free_split(char **split);
 
 #endif
