@@ -7,7 +7,8 @@ SRCS =	ft_export.c \
 	ft_split.c \
 	path.c \
 	ft_cd.c \
-	readline.c 
+	readline.c \
+	redirections.c
 
 OBJS = $(SRCS:.c=.o)
 NAME = minishell

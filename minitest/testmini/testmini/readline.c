@@ -125,29 +125,46 @@ char *read_full_line(void)
 	return (line);
 }
 
-char **handle_command(char **env, char **split)
+char	**handle_command(char **envp, char **split)
 {
-	// int	i = 0;
+	int	saved_in;
+	int	saved_out;
+
 	if (!split || !split[0])
-		return (env);
-	// while (split[i])
-	// {
-	// 	printf("[split %d] = \"%s\"\n", i, split[i]);
-	// 	i++;
-	// }
+		return (envp);
+
+	/* Sauvegarde des descripteurs de base (stdin/stdout) */
+	saved_in = dup(STDIN_FILENO);
+	saved_out = dup(STDOUT_FILENO);
+
+	/* Gestion des redirections avant exécution */
+	if (handle_redirections(split) == -1)
+	{
+		restore_std_fds(saved_in, saved_out);
+		return (envp);
+	}
+
+	/* Builtins */
 	if (ft_strcmp(split[0], "echo") == 0)
 		ft_echo(split);
 	else if (ft_strcmp(split[0], "pwd") == 0)
 		ft_pwd();
-	else if (ft_strcmp(split[0], "export") == 0)
-		env = ft_export(env, split);
 	else if (ft_strcmp(split[0], "cd") == 0)
-		env = ft_cd(split, env);
+		envp = ft_cd(split, envp);
+	else if (ft_strcmp(split[0], "export") == 0)
+		envp = ft_export(envp, split);
+	else if (ft_strcmp(split[0], "exit") == 0)
+	{
+		printf("exit\n");
+		restore_std_fds(saved_in, saved_out);
+		exit(0);
+	}
 	else
-		exec_command(split, env);
-	// else
-	// 	printf("minishell: command not found: %s\n", split[0]);
-	return (env);
+		exec_command(split, envp);
+
+	/* Restauration des entrées/sorties après exécution */
+	restore_std_fds(saved_in, saved_out);
+	return (envp);
 }
 
 int main(int argc, char **argv, char **envp)

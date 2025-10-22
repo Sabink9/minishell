@@ -9,6 +9,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
+#include <fcntl.h>
 
 // typedef struct s_env
 // {
@@ -30,5 +31,8 @@ void exec_command(char **args, char **envp);
 
 /* ----------------- UTILS ----------------- */
 void free_split(char **split);
+
+int	handle_redirections(char **args);
+int	restore_std_fds(int saved_in, int saved_out);
 
 #endif
