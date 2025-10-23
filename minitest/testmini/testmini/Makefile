@@ -8,6 +8,10 @@ SRCS =	ft_export.c \
 	path.c \
 	ft_cd.c \
 	readline.c \
+	pipe.c \
+	parse_pipe.c \
+	expand.c \
+	quotes.c \
 	redirections.c
 
 OBJS = $(SRCS:.c=.o)

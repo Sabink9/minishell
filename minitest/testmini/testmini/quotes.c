@@ -1,121 +1,59 @@
 #include "mini.h"
 
-void	free_tab(char **tab)
+/* ajoute un caractère à une chaîne et libère l’ancienne */
+static char	*strjoin_char_free(char *s, char c)
 {
-	int	i;
+	int		len;
+	char	*res;
+	int		i;
 
-	if (!tab)
-		return ;
-	i = 0;
-	while (tab[i])
-	{
-		free(tab[i]);
-		i++;
-	}
-	free(tab);
-}
-
-int	count_words(char *string, char sep)
-{
-	int	i;
-	int	in_word;
-	int	count;
-
-	i = 0;
-	count = 0;
-	in_word = 0;
-	while(string[i])
-	{
-		if (string[i] != sep && !in_word)
-		{
-			in_word = 1;
-			count++;
-		}
-		else if (string[i] == sep)
-			in_word = 0;
-		i++;
-	}
-	return (count);
-}
-
-int	len_word(char *string, char sep, int i)
-{
-	int	len;
-	
 	len = 0;
-
-	while (string[i] && string[i] != sep)
-	{
+	while (s && s[len])
 		len++;
-		i++;
-	}
-	return (len);
+	res = malloc(len + 2);
+	if (!res)
+		return (free(s), NULL);
+	i = -1;
+	while (++i < len)
+		res[i] = s[i];
+	res[i++] = c;
+	res[i] = '\0';
+	free(s);
+	return (res);
 }
 
-int	malloc_tab(int word_len, char **split, int k)
+/* pré-traite la ligne : supprime les quotes et marque les zones protégées */
+char	*process_quotes(char *line)
 {
-	split[k] = malloc(sizeof(char) * (word_len + 1));
-	if (!split[k])
-	{
-		free_tab(split);
-		return (0);
-	}
-	return (1);
-}
+	char	*res;
+	int		i;
+	char	q;
 
-int	create_tab(char **split, char *string, char sep)
-{
-	int	i;
-	int	j;
-	int	k;
-	int	word_len;
-
+	res = malloc(1);
+	if (!res)
+		return (NULL);
+	res[0] = '\0';
 	i = 0;
-	k = 0;
-	while (string[i])
+	q = 0;
+	while (line[i])
 	{
-		while (string[i] == sep)
+		if ((line[i] == '\'' || line[i] == '\"'))
+		{
+			if (q == 0)
+				q = line[i];
+			else if (q == line[i])
+				q = 0;
 			i++;
-		if (string[i] == '\0')
-			break;
-		word_len = len_word(string, sep, i);
-		malloc_tab(word_len, split, k);
-		j = 0;
-		while (j < word_len)
-			split[k][j++] = string[i++];
-		split[k][j] = '\0';
-		k++;
-	}
-	split[k] = NULL;
-	return (1);
-}
-
-char	**ft_split(char *string, char sep)
-{
-	int	count;
-	char	**split;
-
-	count = count_words(string, sep);
-	split = malloc(sizeof(char *) * (count + 1));
-	if (!split)
-		return (NULL);
-	if(!create_tab(split, string, sep))
-		return (NULL);
-	return(split);
-}
-#include <stdio.h>
-int	main()
-{
-	int	i;
-	char	**split;
-
-	i = 0;
-	split = ft_split("salut je vais bien", ' ');
-	while (split[i])
-	{
-		printf("%s\n", split[i]);
+			continue ;
+		}
+		if (q == '\'')
+		{
+			if (line[i] == '$')
+				line[i] = -1; /* bloque expansion dans quotes simples */
+		}
+		res = strjoin_char_free(res, line[i]);
 		i++;
 	}
-	free_tab(split);
-	return (0);
+	return (res);
 }
+

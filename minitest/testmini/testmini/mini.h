@@ -28,11 +28,16 @@ char	**ft_cd(char **args, char **envp);
 char *get_path_from_env(char **envp);
 char *find_executable(char *cmd, char **envp);
 void exec_command(char **args, char **envp);
+int	exec_piped_commands(char ***cmdv, int n, char **envp);
+char	***parse_pipes(char **split, int *n);
+void	free_cmdv(char ***cmdv);
 
 /* ----------------- UTILS ----------------- */
 void free_split(char **split);
 
 int	handle_redirections(char **args);
 int	restore_std_fds(int saved_in, int saved_out);
+char	*expand_variables(char *line, char **envp, int last_exit);
+char	*process_quotes(char *line);
 
 #endif
