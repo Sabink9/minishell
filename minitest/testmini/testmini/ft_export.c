@@ -8,7 +8,6 @@ static int	envp_size(char **envp)
 	return (i);
 }
 
-/* Cherche la position d'une variable dans envp */
 static int	find_env_index(char **envp, const char *key)
 {
 	int	i = 0;
@@ -23,7 +22,6 @@ static int	find_env_index(char **envp, const char *key)
 	return (-1);
 }
 
-/* Affiche les variables exportées */
 static void	print_export(char **envp)
 {
 	int	i = 0;
@@ -34,7 +32,6 @@ static void	print_export(char **envp)
 	}
 }
 
-/* Construit une variable "KEY=VALUE" */
 static char	*make_env_var(const char *key, const char *value)
 {
 	int		len_key = strlen(key);
@@ -61,7 +58,6 @@ static char	*make_env_var(const char *key, const char *value)
 	return (new_var);
 }
 
-/* Ajoute ou remplace une variable */
 static char	**set_env_var(char **envp, const char *key, const char *value)
 {
 	int		idx = find_env_index(envp, key);
@@ -74,7 +70,6 @@ static char	**set_env_var(char **envp, const char *key, const char *value)
 	if (!new_var)
 		return (envp);
 
-	/* Si la clé existe déjà, on la remplace */
 	if (idx >= 0)
 	{
 		free(envp[idx]);
@@ -82,7 +77,6 @@ static char	**set_env_var(char **envp, const char *key, const char *value)
 		return (envp);
 	}
 
-	/* Sinon, on agrandit le tableau */
 	new_envp = malloc(sizeof(char *) * (size + 2));
 	if (!new_envp)
 	{
@@ -98,11 +92,9 @@ static char	**set_env_var(char **envp, const char *key, const char *value)
 	new_envp[i++] = new_var;
 	new_envp[i] = NULL;
 
-	/* ⚠️ On ne free pas envp (il peut venir du système) */
 	return (new_envp);
 }
 
-/* Sépare key et value */
 static void	split_key_value(const char *str, char **key, char **value)
 {
 	int	i = 0;
@@ -116,7 +108,6 @@ static void	split_key_value(const char *str, char **key, char **value)
 		*value = NULL;
 }
 
-/* Commande export */
 char	**ft_export(char **envp, char **args)
 {
 	int		i = 1;

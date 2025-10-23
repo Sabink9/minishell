@@ -34,7 +34,7 @@ static void	set_env_value(char **envp, const char *key, const char *value)
 			strcpy(new_entry, key);
 			strcat(new_entry, "=");
 			strcat(new_entry, value);
-			envp[i] = new_entry; // ⚠️ On remplace, sans free
+			envp[i] = new_entry;
 			return ;
 		}
 		i++;
