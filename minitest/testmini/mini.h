@@ -9,6 +9,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
+#include <signal.h>
 
 typedef struct s_env
 {
@@ -29,5 +30,8 @@ void exec_command(char **args, char **envp);
 
 /* ----------------- UTILS ----------------- */
 void free_split(char **split);
+/* ----------------- SIGNALS----------------------- */
+
+void	init_signals(void);
 
 #endif

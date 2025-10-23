@@ -149,18 +149,20 @@ char **handle_command(char **env, char **split)
 	return (env);
 }
 
-int main(int argc, char **argv, char **envp)
+int	main(int argc, char **argv, char **envp)
 {
 	char *line;
 	char **split_line;
-	// t_env	*env;
 
 	(void)argc;
 	(void)argv;
+
+	init_signals();
+
 	while (1)
 	{
 		line = read_full_line();
-		if (!line)
+		if (!line) // Ctrl-D → readline renvoie NULL
 			break;
 
 		if (*line)
@@ -183,5 +185,6 @@ int main(int argc, char **argv, char **envp)
 		free(line);
 	}
 	rl_clear_history();
-	return 0;
+	return (0);
 }
+
