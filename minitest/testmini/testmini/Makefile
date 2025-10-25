@@ -15,22 +15,32 @@ SRCS =	ft_export.c \
 	redirections.c
 
 OBJS = $(SRCS:.c=.o)
-NAME = minishell
-LIBS = -lreadline -lncurses
 
-all: $(NAME)
+# libft
+LIBFT_DIR = ../libft
+LIBFT = $(LIBFT_DIR)/libft.a
+
+NAME = minishell
+LIBS = -L $(LIBFT_DIR) -lft -lreadline -lncurses
+
+all: $(LIBFT) $(NAME)
+
+$(LIBFT):
+	@$(MAKE) -C $(LIBFT_DIR)
 
 $(NAME): $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) -o $(NAME) $(LIBS)
 
 %.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -I $(LIBFT_DIR) -c $< -o $@
 
 clean:
 	$(RM) $(OBJS)
+	@$(MAKE) -C $(LIBFT_DIR) clean
 
 fclean: clean
 	$(RM) $(NAME)
+	@$(MAKE) -C $(LIBFT_DIR) fclean
 
 re: fclean all
 

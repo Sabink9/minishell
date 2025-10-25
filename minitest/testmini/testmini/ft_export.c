@@ -1,4 +1,5 @@
 #include "mini.h"
+#include "../libft/libft.h"
 
 static int	envp_size(char **envp)
 {
@@ -11,11 +12,11 @@ static int	envp_size(char **envp)
 static int	find_env_index(char **envp, const char *key)
 {
 	int	i = 0;
-	int	len = strlen(key);
+	int	len = ft_strlen(key);
 
 	while (envp && envp[i])
 	{
-		if (strncmp(envp[i], key, len) == 0 && envp[i][len] == '=')
+		if (ft_strncmp(envp[i], key, len) == 0 && envp[i][len] == '=')
 			return (i);
 		i++;
 	}
@@ -34,8 +35,8 @@ static void	print_export(char **envp)
 
 static char	*make_env_var(const char *key, const char *value)
 {
-	int		len_key = strlen(key);
-	int		len_value = value ? strlen(value) : 0;
+	int		len_key = ft_strlen(key);
+	int		len_value = value ? ft_strlen(value) : 0;
 	char	*new_var;
 	int		i = 0;
 	int		j = 0;
@@ -101,9 +102,9 @@ static void	split_key_value(const char *str, char **key, char **value)
 
 	while (str[i] && str[i] != '=')
 		i++;
-	*key = strndup(str, i);
+	*key = ft_strndup(str, i);
 	if (str[i] == '=')
-		*value = strdup(str + i + 1);
+		*value = ft_strdup(str + i + 1);
 	else
 		*value = NULL;
 }

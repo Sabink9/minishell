@@ -1,4 +1,5 @@
 #include "mini.h"
+#include "../libft/libft.h"
 
 /* ajoute un caractère à une chaîne et free l’ancienne */
 static char	*strjoin_char_free(char *s, char c)
@@ -63,7 +64,7 @@ static char	*get_env_value(char *name, char **envp)
 	i = 0;
 	while (envp && envp[i])
 	{
-		if (!strncmp(envp[i], name, len) && envp[i][len] == '=')
+		if (!ft_strncmp(envp[i], name, len) && envp[i][len] == '=')
 			return (envp[i] + len + 1);
 		i++;
 	}

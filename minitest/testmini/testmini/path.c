@@ -1,4 +1,5 @@
 #include "mini.h"
+#include "../libft/libft.h"
 
 char	*get_path_from_env(char **envp)
 {
@@ -7,7 +8,7 @@ char	*get_path_from_env(char **envp)
 	i = 0;
 	while (envp && envp[i])
 	{
-		if (strncmp(envp[i], "PATH=", 5) == 0)
+		if (ft_strncmp(envp[i], "PATH=", 5) == 0)
 			return (envp[i] + 5);
 		i++;
 	}
@@ -21,7 +22,7 @@ static char	*join_dir_cmd(const char *dir, int len_dir, const char *cmd)
 	int		i;
 	int		j;
 
-	len_cmd = strlen(cmd);
+	len_cmd = ft_strlen(cmd);
 	if (len_dir == 0)
 		len_dir = 1;
 	res = malloc(len_dir + len_cmd + 2);
@@ -76,7 +77,7 @@ char	*find_executable(char *cmd, char **envp)
 {
 	char	*path_env;
 
-	if (strchr(cmd, '/'))
+	if (ft_strchr(cmd, '/'))
 	{
 		if (access(cmd, F_OK) != 0)
 		{
@@ -88,7 +89,7 @@ char	*find_executable(char *cmd, char **envp)
 			perror(cmd);
 			return (NULL);
 		}
-		return (strdup(cmd));
+		return (ft_strdup(cmd));
 	}
 	path_env = get_path_from_env(envp);
 	if (!path_env)
@@ -104,7 +105,7 @@ void	exec_command(char **args, char **envp)
 
 	if (!exec_path)
 	{
-		if (!strchr(args[0], '/'))
+		if (!ft_strchr(args[0], '/'))
 			printf("minishell: command not found: %s\n", args[0]);
 		return ;
 	}

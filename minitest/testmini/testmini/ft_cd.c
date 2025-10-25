@@ -1,15 +1,16 @@
 #include "mini.h"
+#include "../libft/libft.h"
 
 static char	*get_env_value(char **envp, const char *key)
 {
 	int		i;
 	size_t	len;
 
-	len = strlen(key);
+	len = ft_strlen(key);
 	i = 0;
 	while (envp[i])
 	{
-		if (strncmp(envp[i], key, len) == 0 && envp[i][len] == '=')
+		if (ft_strncmp(envp[i], key, len) == 0 && envp[i][len] == '=')
 			return (envp[i] + len + 1);
 		i++;
 	}
@@ -22,18 +23,18 @@ static void	set_env_value(char **envp, const char *key, const char *value)
 	size_t	len;
 	char	*new_entry;
 
-	len = strlen(key);
+	len = ft_strlen(key);
 	i = 0;
 	while (envp[i])
 	{
-		if (strncmp(envp[i], key, len) == 0 && envp[i][len] == '=')
+		if (ft_strncmp(envp[i], key, len) == 0 && envp[i][len] == '=')
 		{
-			new_entry = malloc(strlen(key) + strlen(value) + 2);
+			new_entry = malloc(ft_strlen(key) + ft_strlen(value) + 2);
 			if (!new_entry)
 				return ;
-			strcpy(new_entry, key);
-			strcat(new_entry, "=");
-			strcat(new_entry, value);
+			ft_strcpy(new_entry, key);
+			ft_strcat(new_entry, "=");
+			ft_strcat(new_entry, value);
 			envp[i] = new_entry;
 			return ;
 		}

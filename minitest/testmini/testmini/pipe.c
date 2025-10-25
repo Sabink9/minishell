@@ -1,4 +1,5 @@
 #include "mini.h"
+#include "../libft/libft.h"
 
 static void	child_process(char **args, char **envp, int in_fd, int out_fd)
 {
@@ -19,7 +20,7 @@ static void	child_process(char **args, char **envp, int in_fd, int out_fd)
 	exec_path = find_executable(args[0], envp);
 	if (!exec_path)
 	{
-		if (!strchr(args[0], '/'))
+		if (!ft_strchr(args[0], '/'))
 			printf("minishell: command not found: %s\n", args[0]);
 		exit(127);
 	}

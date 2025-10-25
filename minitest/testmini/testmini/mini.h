@@ -10,6 +10,7 @@
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <fcntl.h>
+#include "../libft/libft.h"
 
 // typedef struct s_env
 // {
@@ -34,6 +35,7 @@ void	free_cmdv(char ***cmdv);
 
 /* ----------------- UTILS ----------------- */
 void free_split(char **split);
+int	ft_strcmp(char *s1, char *s2);
 
 int	handle_redirections(char **args);
 int	restore_std_fds(int saved_in, int saved_out);

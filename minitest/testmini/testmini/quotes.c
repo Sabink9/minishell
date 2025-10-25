@@ -1,4 +1,5 @@
 #include "mini.h"
+#include "../libft/libft.h"
 
 /* ajoute un caractère à une chaîne et libère l’ancienne */
 static char	*strjoin_char_free(char *s, char c)

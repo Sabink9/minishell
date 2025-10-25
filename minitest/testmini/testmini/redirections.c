@@ -1,4 +1,5 @@
 #include "mini.h"
+#include "../libft/libft.h"
 
 /* ---------- utils ---------- */
 
@@ -36,7 +37,7 @@ static void	redir_out(const char *file, int append)
 
 /* ---------- heredoc ---------- */
 
-static void	handle_heredoc(const char *delim)
+static void	handle_heredoc(char *delim)
 {
 	int		pipefd[2];
 	char	*line;
@@ -46,7 +47,7 @@ static void	handle_heredoc(const char *delim)
 	while (1)
 	{
 		line = readline("> ");
-		if (!line || strcmp(line, delim) == 0)
+		if (!line || ft_strcmp(line, delim) == 0)
 			break ;
 		write(pipefd[1], line, strlen(line));
 		write(pipefd[1], "\n", 1);
@@ -69,13 +70,13 @@ int	handle_redirections(char **args)
 	{
 		if (!args[i + 1])
 			break ;
-		if (strcmp(args[i], "<") == 0)
+		if (ft_strcmp(args[i], "<") == 0)
 			redir_in(args[i + 1]);
-		else if (strcmp(args[i], ">") == 0)
+		else if (ft_strcmp(args[i], ">") == 0)
 			redir_out(args[i + 1], 0);
-		else if (strcmp(args[i], ">>") == 0)
+		else if (ft_strcmp(args[i], ">>") == 0)
 			redir_out(args[i + 1], 1);
-		else if (strcmp(args[i], "<<") == 0)
+		else if (ft_strcmp(args[i], "<<") == 0)
 			handle_heredoc(args[i + 1]);
 		else
 		{

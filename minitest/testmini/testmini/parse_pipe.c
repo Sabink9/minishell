@@ -1,4 +1,5 @@
 #include "mini.h"
+#include "../libft/libft.h"
 
 static int	count_pipes(char **split)
 {
@@ -9,7 +10,7 @@ static int	count_pipes(char **split)
 	count = 1;
 	while (split[i])
 	{
-		if (strcmp(split[i], "|") == 0)
+		if (ft_strcmp(split[i], "|") == 0)
 			count++;
 		i++;
 	}
@@ -32,12 +33,12 @@ char	***parse_pipes(char **split, int *n)
 	while (j < *n)
 	{
 		int	start = i;
-		while (split[i] && strcmp(split[i], "|") != 0)
+		while (split[i] && ft_strcmp(split[i], "|") != 0)
 			i++;
 		cmdv[j] = malloc(sizeof(char *) * (i - start + 1));
 		k = 0;
 		while (start < i)
-			cmdv[j][k++] = strdup(split[start++]);
+			cmdv[j][k++] = ft_strdup(split[start++]);
 		cmdv[j][k] = NULL;
 		if (split[i])
 			i++;

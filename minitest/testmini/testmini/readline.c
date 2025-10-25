@@ -1,4 +1,5 @@
 #include "mini.h"
+#include "../libft/libft.h"
 
 int	ft_strcmp(char *s1, char *s2)
 {
@@ -83,7 +84,7 @@ char	*ft_strjoin(char *s1, char *s2)
 
 	if (!s1 || !s2)
 		return (NULL);
-	res = malloc(strlen(s1) + strlen(s2) + 1);
+	res = malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
 	if (!res)
 		return (NULL);
 	i = 0;
@@ -131,7 +132,7 @@ int	has_pipe(char **split)
 	i = 0;
 	while (split[i])
 	{
-		if (strcmp(split[i], "|") == 0)
+		if (ft_strcmp(split[i], "|") == 0)
 			return (1);
 		i++;
 	}
@@ -206,7 +207,7 @@ int	main(int argc, char **argv, char **envp)
 		split_line = ft_split(line);
 		if (split_line && split_line[0])
 		{
-			if (strcmp(split_line[0], "exit") == 0)
+			if (ft_strcmp(split_line[0], "exit") == 0)
 			{
 				free_split(split_line);
 				printf("exit\n");
