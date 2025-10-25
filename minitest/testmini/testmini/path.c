@@ -1,5 +1,5 @@
-#include "mini.h"
 #include "../libft/libft.h"
+#include "mini.h"
 
 char	*get_path_from_env(char **envp)
 {
@@ -97,7 +97,6 @@ char	*find_executable(char *cmd, char **envp)
 	return (search_in_path(path_env, cmd));
 }
 
-
 void	exec_command(char **args, char **envp)
 {
 	pid_t pid;
@@ -106,7 +105,12 @@ void	exec_command(char **args, char **envp)
 	if (!exec_path)
 	{
 		if (!ft_strchr(args[0], '/'))
-			printf("minishell: command not found: %s\n", args[0]);
+		{
+			write(2, "minishell: command not found: ", 31);
+			write(2, args[0], ft_strlen(args[0]));
+			write(2, "\n", 1);
+		}
+
 		return ;
 	}
 
