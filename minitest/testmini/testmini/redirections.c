@@ -10,16 +10,26 @@ static void	skip_args(char **args, int *i)
 	*i += 2;
 }
 
-static void	redir_in(const char *file)
+static int redir_in(const char *file)
 {
 	int	fd;
 
 	fd = open(file, O_RDONLY);
 	if (fd < 0)
-		return (perror(file));
-	dup2(fd, STDIN_FILENO);
+	{
+		perror(file);
+		return (1);
+	}
+	if (dup2(fd, STDIN_FILENO) < 0)
+	{
+		perror("dup2");
+		close(fd);
+		return (1);
+	}
 	close(fd);
+	return (0);
 }
+
 
 static void	redir_out(const char *file, int append)
 {
@@ -74,7 +84,10 @@ int	handle_redirections(char **args)
 		if (!args[i + 1])
 			break ;
 		if (ft_strcmp(args[i], "<") == 0)
-			redir_in(args[i + 1]);
+		{
+			if (redir_in(args[i + 1]))
+				return (1);
+		}
 		else if (ft_strcmp(args[i], ">") == 0)
 			redir_out(args[i + 1], 0);
 		else if (ft_strcmp(args[i], ">>") == 0)
@@ -82,11 +95,10 @@ int	handle_redirections(char **args)
 		else if (ft_strcmp(args[i], "<<") == 0)
 		{
 			heredoc_fd = handle_heredoc(args[i + 1]);
-			if (heredoc_fd != -1)
-			{
-				dup2(heredoc_fd, STDIN_FILENO);
-				close(heredoc_fd);
-			}
+			if (heredoc_fd == -1)
+				return (1);
+			dup2(heredoc_fd, STDIN_FILENO);
+			close(heredoc_fd);
 		}
 		else
 		{
@@ -97,6 +109,7 @@ int	handle_redirections(char **args)
 	}
 	return (0);
 }
+
 
 /* Restaure les stdin/stdout d’origine après exécution */
 int	restore_std_fds(int saved_in, int saved_out)

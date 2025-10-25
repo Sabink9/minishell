@@ -16,7 +16,8 @@ static void	child_process(char **args, char **envp, int in_fd, int out_fd)
 		close(out_fd);
 	}
 	/* redirections locales à ce segment */
-	handle_redirections(args);
+	if (handle_redirections(args))
+		exit(1);
 	exec_path = find_executable(args[0], envp);
 	if (!exec_path)
 	{
