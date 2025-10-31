@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include "../libft/libft.h"
 
 static int	ft_word_len(const char *s, int *i)
 {
@@ -93,3 +94,19 @@ char	**ft_split(const char *s)
 	res[j] = NULL;
 	return (res);
 }
+void	free_split(char **tab)
+{
+	int	i;
+
+	i = 0;
+	if (!tab)
+		return ;
+	while (tab[i])
+	{
+		free(tab[i]);
+		tab[i] = NULL;
+		i++;
+	}
+	free(tab);
+}
+

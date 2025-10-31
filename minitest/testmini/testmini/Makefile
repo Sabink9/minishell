@@ -2,17 +2,21 @@ CC = cc
 CFLAGS = -Wall -Werror -Wextra
 RM = rm -f
 
-SRCS =	ft_export.c \
+SRCS =	expand.c \
+	export_utils1.c \
+	export_utils2.c \
+	ft_cd.c \
 	ft_pwd.c \
 	ft_split.c \
-	path.c \
-	ft_cd.c \
-	readline.c \
-	pipe.c \
+	main.c \
 	parse_pipe.c \
-	expand.c \
+	path.c \
+	pipe.c \
 	quotes.c \
-	redirections.c
+	readline.c \
+	redir_in_out.c \
+	redirections.c \
+	utils.c
 
 OBJS = $(SRCS:.c=.o)
 

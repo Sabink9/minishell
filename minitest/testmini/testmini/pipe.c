@@ -1,5 +1,5 @@
-#include "mini.h"
 #include "../libft/libft.h"
+#include "mini.h"
 
 static void	child_process(char **args, char **envp, int in_fd, int out_fd)
 {
@@ -30,13 +30,38 @@ static void	child_process(char **args, char **envp, int in_fd, int out_fd)
 	exit(126);
 }
 
+static int	exec_child(char **cmd, char **envp, int in_fd, int *pipefd,
+		int is_last)
+{
+	if (!is_last)
+	{
+		close(pipefd[0]);
+		child_process(cmd, envp, in_fd, pipefd[1]);
+	}
+	else
+		child_process(cmd, envp, in_fd, STDOUT_FILENO);
+	return (0);
+}
+
+static int	handle_parent(int *in_fd, int *pipefd, int i, int n)
+{
+	if (*in_fd != STDIN_FILENO)
+		close(*in_fd);
+	if (i < n - 1)
+	{
+		close(pipefd[1]);
+		*in_fd = pipefd[0];
+	}
+	return (0);
+}
+
 int	exec_piped_commands(char ***cmdv, int n, char **envp)
 {
-	int		i;
-	int		pipefd[2];
-	int		in_fd;
-	pid_t	pid;
-	int		status;
+	int i;
+	int pipefd[2];
+	int in_fd;
+	pid_t pid;
+	int status;
 
 	i = 0;
 	in_fd = STDIN_FILENO;
@@ -48,22 +73,8 @@ int	exec_piped_commands(char ***cmdv, int n, char **envp)
 		if (pid == -1)
 			return (perror("fork"), 1);
 		if (pid == 0)
-		{
-			if (i < n - 1)
-			{
-				close(pipefd[0]);
-				child_process(cmdv[i], envp, in_fd, pipefd[1]);
-			}
-			else
-				child_process(cmdv[i], envp, in_fd, STDOUT_FILENO);
-		}
-		if (in_fd != STDIN_FILENO)
-			close(in_fd);
-		if (i < n - 1)
-		{
-			close(pipefd[1]);
-			in_fd = pipefd[0];
-		}
+			exec_child(cmdv[i], envp, in_fd, pipefd, i == n - 1);
+		handle_parent(&in_fd, pipefd, i, n);
 		i++;
 	}
 	while (wait(&status) > 0)

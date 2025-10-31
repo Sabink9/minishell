@@ -42,17 +42,10 @@ static void	set_env_value(char **envp, const char *key, const char *value)
 	}
 }
 
-char	**ft_cd(char **args, char **envp)
+static int	change_directory(char **args, char **envp, char *oldpwd, char *newpwd)
 {
-	char	oldpwd[1024];
-	char	newpwd[1024];
 	char	*target;
 
-	if (!getcwd(oldpwd, sizeof(oldpwd)))
-	{
-		perror("cd");
-		return (envp);
-	}
 	if (!args[1])
 		target = get_env_value(envp, "HOME");
 	else
@@ -60,19 +53,34 @@ char	**ft_cd(char **args, char **envp)
 	if (!target)
 	{
 		printf("minishell: cd: HOME not set\n");
-		return (envp);
+		return (0);
 	}
 	if (chdir(target) != 0)
 	{
 		perror("cd");
-		return (envp);
+		return (0);
 	}
-	if (!getcwd(newpwd, sizeof(newpwd)))
+	if (!getcwd(newpwd, 1024))
+	{
+		perror("cd");
+		return (0);
+	}
+	set_env_value(envp, "OLDPWD", oldpwd);
+	set_env_value(envp, "PWD", newpwd);
+	return (1);
+}
+
+char	**ft_cd(char **args, char **envp)
+{
+	char	oldpwd[1024];
+	char	newpwd[1024];
+
+	if (!getcwd(oldpwd, 1024))
 	{
 		perror("cd");
 		return (envp);
 	}
-	set_env_value(envp, "OLDPWD", oldpwd);
-	set_env_value(envp, "PWD", newpwd);
+	if (!change_directory(args, envp, oldpwd, newpwd))
+		return (envp);
 	return (envp);
 }

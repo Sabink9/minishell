@@ -17,11 +17,32 @@ static int	count_pipes(char **split)
 	return (count);
 }
 
+static char	**copy_pipe_segment(char **split, int start, int end)
+{
+	char	**cmd;
+	int		k;
+
+	cmd = malloc(sizeof(char *) * (end - start + 1));
+	if (!cmd)
+		return (NULL);
+	k = 0;
+	while (start < end)
+	{
+		cmd[k] = ft_strdup(split[start]);
+		if (!cmd[k])
+			return (NULL);
+		k++;
+		start++;
+	}
+	cmd[k] = NULL;
+	return (cmd);
+}
+
 char	***parse_pipes(char **split, int *n)
 {
 	int		i;
 	int		j;
-	int		k;
+	int		start;
 	char	***cmdv;
 
 	*n = count_pipes(split);
@@ -32,14 +53,10 @@ char	***parse_pipes(char **split, int *n)
 	j = 0;
 	while (j < *n)
 	{
-		int	start = i;
+		start = i;
 		while (split[i] && ft_strcmp(split[i], "|") != 0)
 			i++;
-		cmdv[j] = malloc(sizeof(char *) * (i - start + 1));
-		k = 0;
-		while (start < i)
-			cmdv[j][k++] = ft_strdup(split[start++]);
-		cmdv[j][k] = NULL;
+		cmdv[j] = copy_pipe_segment(split, start, i);
 		if (split[i])
 			i++;
 		j++;

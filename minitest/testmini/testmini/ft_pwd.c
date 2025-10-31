@@ -1,4 +1,5 @@
 #include "mini.h"
+#include "../libft/libft.h"
 
 int	ft_pwd(void)
 {
