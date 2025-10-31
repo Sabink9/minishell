@@ -52,25 +52,25 @@ static int	change_directory(char **args, char **envp, char *oldpwd, char *newpwd
 		target = args[1];
 	if (!target)
 	{
-		printf("minishell: cd: HOME not set\n");
-		return (0);
+		write(2, "minishell: cd: HOME not set\n", 29);
+		return (1);
 	}
 	if (chdir(target) != 0)
 	{
 		perror("cd");
-		return (0);
+		return (1);
 	}
 	if (!getcwd(newpwd, 1024))
 	{
 		perror("cd");
-		return (0);
+		return (1);
 	}
 	set_env_value(envp, "OLDPWD", oldpwd);
 	set_env_value(envp, "PWD", newpwd);
-	return (1);
+	return (0);
 }
 
-char	**ft_cd(char **args, char **envp)
+int	ft_cd(char **args, char **envp)
 {
 	char	oldpwd[1024];
 	char	newpwd[1024];
@@ -78,9 +78,7 @@ char	**ft_cd(char **args, char **envp)
 	if (!getcwd(oldpwd, 1024))
 	{
 		perror("cd");
-		return (envp);
+		return (1);
 	}
-	if (!change_directory(args, envp, oldpwd, newpwd))
-		return (envp);
-	return (envp);
+	return (change_directory(args, envp, oldpwd, newpwd));
 }

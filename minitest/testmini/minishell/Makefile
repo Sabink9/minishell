@@ -16,7 +16,9 @@ SRCS =	expand.c \
 	readline.c \
 	redir_in_out.c \
 	redirections.c \
-	utils.c
+	signals.c \
+	utils.c \
+	utils2.c
 
 OBJS = $(SRCS:.c=.o)
 

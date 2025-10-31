@@ -1,7 +1,7 @@
-#include "mini.h"
 #include "../libft/libft.h"
+#include "mini.h"
 
-void	ft_echo(char **split)
+int	ft_echo(char **split)
 {
 	int	i;
 	int	no_newline;
@@ -9,10 +9,7 @@ void	ft_echo(char **split)
 	i = 1;
 	no_newline = 0;
 	if (!split[0] || ft_strcmp(split[0], "echo") != 0)
-	{
-		printf("Format : \"echo <string>\"\n");
-		return ;
-	}
+		return (1);
 	if (split[1] && ft_strcmp(split[1], "-n") == 0)
 	{
 		no_newline = 1;
@@ -27,6 +24,7 @@ void	ft_echo(char **split)
 	}
 	if (!no_newline)
 		printf("\n");
+	return (0);
 }
 
 int	unclosed_quote(const char *line)
@@ -57,7 +55,9 @@ char	*read_full_line(void)
 	char	*joined;
 
 	line = readline("$> ");
-	while (line && unclosed_quote(line))
+	if (!line)
+		return (NULL);
+	while (unclosed_quote(line))
 	{
 		tmp = readline("> ");
 		if (!tmp)
@@ -85,4 +85,3 @@ int	has_pipe(char **split)
 	}
 	return (0);
 }
-

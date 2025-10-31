@@ -97,28 +97,63 @@ char	*find_executable(char *cmd, char **envp)
 	return (search_in_path(path_env, cmd));
 }
 
-void	exec_command(char **args, char **envp)
-{
-	pid_t pid;
-	char *exec_path = find_executable(args[0], envp);
+#include "../libft/libft.h"
+#include "mini.h"
+#include <signal.h>
 
+int	exec_command(char **args, char **envp)
+{
+	pid_t	pid;
+	int		status;
+	char	*exec_path;
+	int		sig;
+
+	exec_path = find_executable(args[0], envp);
 	if (!exec_path)
 	{
 		if (!ft_strchr(args[0], '/'))
 		{
-			write(2, "minishell: command not found: ", 31);
+			write(2, "minishell: command not found: ", 30);
 			write(2, args[0], ft_strlen(args[0]));
 			write(2, "\n", 1);
+			return (127);
 		}
-
-		return ;
+		perror(args[0]);
+		return (126);
 	}
-
+	/* Parent : ignorer les signaux pendant l'exécution */
+	signal(SIGINT, SIG_IGN);
+	signal(SIGQUIT, SIG_IGN);
 	pid = fork();
+	if (pid == -1)
+	{
+		perror("fork");
+		setup_interactive_signals(); /* restaurer même en erreur */
+		free(exec_path);
+		return (1);
+	}
 	if (pid == 0)
+	{
+		setup_child_signals(); /* enfant -> comportement par défaut */
 		execve(exec_path, args, envp);
-	else
-		waitpid(pid, NULL, 0);
-
+		perror(args[0]);
+		exit(126);
+	}
 	free(exec_path);
+	waitpid(pid, &status, 0);
+	/* Parent : retour en mode interactif (readline) */
+	if (WIFSIGNALED(status))
+	{
+		sig = WTERMSIG(status);
+		if (sig == SIGINT)       /* Ctrl-C */
+			write(1, "\n", 1);   /* évite ^C$> en collé */
+		else if (sig == SIGQUIT) /* Ctrl-\ */
+			write(2, "Quit: 3\n", 8);
+	}
+	setup_interactive_signals();
+	if (WIFEXITED(status))
+		return (WEXITSTATUS(status));
+	if (WIFSIGNALED(status))
+		return (128 + WTERMSIG(status));
+	return (1);
 }

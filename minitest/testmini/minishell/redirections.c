@@ -9,10 +9,7 @@ static int	handle_heredoc(char *delim)
 	char	*line;
 
 	if (pipe(pipefd) == -1)
-	{
-		perror("pipe");
-		return (-1);
-	}
+		return (perror("pipe"), -1);
 	while (1)
 	{
 		line = readline("> ");
@@ -24,7 +21,7 @@ static int	handle_heredoc(char *delim)
 	}
 	free(line);
 	close(pipefd[1]);
-	return (pipefd[0]); /* on retourne le FD de lecture */
+	return (pipefd[0]);
 }
 
 /* ---------- main handler ---------- */
@@ -39,33 +36,24 @@ int	handle_redirections(char **args)
 	{
 		if (!args[i + 1])
 			break ;
-		if (ft_strcmp(args[i], "<") == 0)
-		{
-			if (redir_in(args[i + 1]))
-				return (1);
-		}
-		else if (ft_strcmp(args[i], ">") == 0)
-			redir_out(args[i + 1], 0);
-		else if (ft_strcmp(args[i], ">>") == 0)
-			redir_out(args[i + 1], 1);
+		if (ft_strcmp(args[i], "<") == 0 && redir_in(args[i + 1]))
+			return (-1);
+		else if (ft_strcmp(args[i], ">") == 0 && redir_out(args[i + 1], 0))
+			return (-1);
+		else if (ft_strcmp(args[i], ">>") == 0 && redir_out(args[i + 1], 1))
+			return (-1);
 		else if (ft_strcmp(args[i], "<<") == 0)
 		{
 			heredoc_fd = handle_heredoc(args[i + 1]);
 			if (heredoc_fd == -1)
-				return (1);
+				return (-1);
 			dup2(heredoc_fd, STDIN_FILENO);
 			close(heredoc_fd);
-		}
-		else
-		{
-			i++;
-			continue ;
 		}
 		skip_args(args, &i);
 	}
 	return (0);
 }
-
 
 /* Restaure les stdin/stdout d’origine après exécution */
 int	restore_std_fds(int saved_in, int saved_out)
