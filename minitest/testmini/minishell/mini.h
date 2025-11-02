@@ -6,7 +6,7 @@
 /*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/31 17:16:12 by saciurus          #+#    #+#             */
-/*   Updated: 2025/10/31 18:20:42 by saciurus         ###   ########.fr       */
+/*   Updated: 2025/11/02 19:00:53 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,13 +40,13 @@ char							*get_path_from_env(char **envp);
 char							*find_executable(char *cmd, char **envp);
 int								exec_command(char **args, char **envp);
 int								exec_piped_commands(char ***cmdv, int n,
-									char **envp);
+									char **envp, int last_status);
 char							***parse_pipes(char **split, int *n);
 void							free_cmdv(char ***cmdv);
 
 /* ----------------- UTILS ----------------- */
-char							**ft_split(const char *s);
-void							free_split(char **split);
+char							**ft_split(char *s);
+void							free_split(char **tab);
 int								ft_strcmp(char *s1, char *s2);
 char							*ft_strjoin(char *s1, char *s2);
 char							*strjoin_char_free(char *s, char c);
@@ -56,7 +56,10 @@ void							skip_args(char **args, int *i);
 // redir
 int								redir_in(const char *file);
 int								redir_out(const char *file, int append);
-int								handle_redirections(char **args);
+int								handle_heredoc(char *delim, char **envp,
+									int last_exit);
+int								handle_redirections(char **args, char **envp,
+									int last_exit);
 int								restore_std_fds(int saved_in, int saved_out);
 char							*expand_variables(char *line, char **envp,
 									int last_exit);
@@ -77,8 +80,6 @@ char							**set_env_var(char **envp, const char *key,
 void							split_key_value(const char *str, char **key,
 									char **value);
 char							**ft_export(char **envp, char **args);
-
-int								unclosed_quote(const char *line);
 char							*read_full_line(void);
 int								has_pipe(char **split);
 int								ft_env(char **args, char **envp);
@@ -88,4 +89,6 @@ int								ft_exit(char **args, int *exit_status,
 int								ft_is_numeric(const char *s);
 void							ft_putstr_fd2(char *s);
 long							ft_atol(const char *str);
+char							**compact_argv(char **args);
+
 #endif

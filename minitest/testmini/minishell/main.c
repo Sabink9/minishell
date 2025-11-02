@@ -5,35 +5,63 @@ char	**handle_command(char **envp, char **split, int *exit_status)
 {
 	char	***cmdv;
 	int		cmd_count;
+	int		saved_in;
+	int		saved_out;
+	char	**argv;
+	int		rc;
 
 	if (!split || !split[0])
 		return (envp);
+	/* --- PIPE --- */
 	if (has_pipe(split))
 	{
 		cmdv = parse_pipes(split, &cmd_count);
 		if (!cmdv)
 			return (envp);
-		*exit_status = exec_piped_commands(cmdv, cmd_count, envp);
+		*exit_status = exec_piped_commands(cmdv, cmd_count, envp, *exit_status);
 		free_cmdv(cmdv);
 		return (envp);
 	}
-	if (ft_strcmp(split[0], "echo") == 0)
-		*exit_status = ft_echo(split);
-	else if (ft_strcmp(split[0], "pwd") == 0)
-		*exit_status = ft_pwd();
-	else if (ft_strcmp(split[0], "export") == 0)
+	/* --- REDIRS + BUILTINS/EXEC (commande simple) --- */
+	saved_in = dup(STDIN_FILENO);
+	saved_out = dup(STDOUT_FILENO);
+	if (saved_in < 0 || saved_out < 0)
+		return (envp);
+	rc = handle_redirections(split, envp, *exit_status);
+	if (rc != 0)
 	{
-		envp = ft_export(envp, split);
-		*exit_status = 0;
+		*exit_status = (rc == -2) ? 130 : 1; /* ^C HDOC -> 130, sinon 1 */
+		restore_std_fds(saved_in, saved_out);
+		return (envp);
 	}
-	else if (ft_strcmp(split[0], "cd") == 0)
-		*exit_status = ft_cd(split, envp);
-	else if (ft_strcmp(split[0], "env") == 0)
-		*exit_status = ft_env(split, envp);
-	else if (ft_strcmp(split[0], "exit") == 0)
-		ft_exit(split, exit_status, 0);
+	argv = compact_argv(split);
+	if (!argv)
+	{
+		restore_std_fds(saved_in, saved_out);
+		return (envp);
+	}
+	if (!argv[0])
+	{ /* ex: juste “> a.txt” */
+		free_split(argv);
+		restore_std_fds(saved_in, saved_out);
+		return (envp);
+	}
+	if (!ft_strcmp(argv[0], "echo"))
+		*exit_status = ft_echo(argv);
+	else if (!ft_strcmp(argv[0], "pwd"))
+		*exit_status = ft_pwd();
+	else if (!ft_strcmp(argv[0], "export"))
+		(envp = ft_export(envp, argv), *exit_status = 0);
+	else if (!ft_strcmp(argv[0], "cd"))
+		*exit_status = ft_cd(argv, envp);
+	else if (!ft_strcmp(argv[0], "env"))
+		*exit_status = ft_env(argv, envp);
+	else if (!ft_strcmp(argv[0], "exit"))
+		ft_exit(argv, exit_status, 0); /* parent only */
 	else
-		*exit_status = exec_command(split, envp);
+		*exit_status = exec_command(argv, envp);
+	free_split(argv);
+	restore_std_fds(saved_in, saved_out);
 	return (envp);
 }
 
@@ -59,6 +87,8 @@ int	main(int argc, char **argv, char **envp)
 		{
 			exit_status = 130;
 			g_sig = 0;
+			free (line);
+			continue ;
 		}
 		// 🔹 Si la ligne est vide, on repart directement
 		if (*line == '\0')

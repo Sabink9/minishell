@@ -1,3 +1,4 @@
+/* signals.c */
 #include "mini.h"
 #include <readline/readline.h>
 #include <unistd.h>
@@ -9,34 +10,31 @@ void	sigint_handler(int sig)
 	(void)sig;
 	g_sig = SIGINT;
 	write(1, "\n", 1);
+	/* on efface la ligne en cours et on passe à une nouvelle ligne,
+		PAS de rl_redisplay ici (ça évite le double $> et les états bizarres) */
 	rl_replace_line("", 0);
 	rl_on_new_line();
-	rl_redisplay();
 }
 
-static void	sigquit_handler(int s)
+static void	sigquit_handler(int sig)
 {
-	(void)s;
-	/* En interactif, rien à afficher */
+	(void)sig;
 }
 
 void	setup_interactive_signals(void)
 {
 	struct sigaction	sa;
 
-	/* SIGINT */
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = SA_RESTART;
 	sa.sa_handler = sigint_handler;
-	sigemptyset(&sa.sa_mask);
-	sa.sa_flags = SA_RESTART;
 	sigaction(SIGINT, &sa, NULL);
-	/* SIGQUIT */
-	sa.sa_handler = sigquit_handler;
 	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = SA_RESTART;
+	sa.sa_handler = sigquit_handler;
 	sigaction(SIGQUIT, &sa, NULL);
 }
 
-/* Dans les enfants : comportement par défaut (comme bash) */
 void	setup_child_signals(void)
 {
 	signal(SIGINT, SIG_DFL);

@@ -1,99 +1,89 @@
-#include <stdlib.h>
 #include "../libft/libft.h"
+#include "mini.h"
 
-static int	ft_word_len(const char *s, int *i)
+/* saute espaces/tabs */
+static int	is_space(int c)
 {
-	int		len = 0;
-	char	quote = 0;
-
-	while (s[*i] == ' ')
-		(*i)++;
-	if (s[*i] == '\'' || s[*i] == '"')
-	{
-		quote = s[(*i)++];
-		while (s[*i] && s[*i] != quote)
-		{
-			len++;
-			(*i)++;
-		}
-		if (s[*i] == quote)
-			(*i)++;
-	}
-	else
-	{
-		while (s[*i] && s[*i] != ' ')
-		{
-			len++;
-			(*i)++;
-		}
-	}
-	return (len);
+	return (c == ' ' || c == '\t');
 }
 
-static char	*ft_word_dup(const char *s, int start, int len)
+/* duplique brut le segment [start, end) SANS enlever les quotes */
+static char	*dup_raw(const char *s, int start, int end)
 {
-	char	*res;
-	int		j;
+	char	*out;
+	int		i;
+	int	k;
 
-	res = malloc(len + 1);
-	if (!res)
+	out = malloc(end - start + 1);
+	i = start;
+	k = 0;
+	if (!out)
 		return (NULL);
-	j = 0;
-	while (j < len)
-	{
-		res[j] = s[start + j];
-		j++;
-	}
-	res[j] = '\0';
-	return (res);
+	while (i < end)
+		out[k++] = s[i++];
+	out[k] = '\0';
+	return (out);
 }
 
-static int	ft_count_words(const char *s)
+/* Split: ignore espaces hors-quotes, conserve les quotes dans les tokens */
+char	**ft_split(char *s)
 {
-	int	i = 0;
-	int	count = 0;
+	int	i;
+	int	q;
+	int	count;
+	int	cap;
+	int	start;
+	int	j;
 
-	while (s[i])
-	{
-		if (s[i] != ' ')
-		{
-			ft_word_len(s, &i);
-			count++;
-		}
-		else
-			i++;
-	}
-	return (count);
-}
-
-char	**ft_split(const char *s)
-{
-	int		i = 0;
-	int		j = 0;
-	int		len;
-	int		start;
-	int		wc;
-	char	**res;
-
+	i = 0;
+	q = 0;
+	count = 0;
+	char **tab, c;
 	if (!s)
 		return (NULL);
-	wc = ft_count_words(s);
-	res = malloc(sizeof(char *) * (wc + 1));
-	if (!res)
+	cap = (int)ft_strlen((char *)s) / 2 + 2;
+	tab = malloc(sizeof(char *) * cap);
+	if (!tab)
 		return (NULL);
-	i = 0;
-	while (j < wc)
+	while (s[i])
 	{
-		while (s[i] == ' ')
+		while (s[i] && is_space(s[i]))
 			i++;
+		if (!s[i])
+			break ;
 		start = i;
-		len = ft_word_len(s, &i);
-		res[j] = ft_word_dup(s, start + (s[start] == '\'' || s[start] == '"'), len);
-		j++;
+		q = 0;
+		while (s[i])
+		{
+			c = s[i];
+			if (c == '\'' || c == '\"')
+			{
+				if (!q)
+					q = c;
+				else if (q == c)
+					q = 0;
+				i++;
+				continue ;
+			}
+			if (!q && is_space(c))
+				break ;
+			i++;
+		}
+		tab[count] = dup_raw(s, start, i);
+		if (!tab[count])
+		{
+			j = 0;
+			while (j < count)
+				free(tab[j++]);
+			free(tab);
+			return (NULL);
+		}
+		count++;
 	}
-	res[j] = NULL;
-	return (res);
+	tab[count] = NULL;
+	return (tab);
 }
+
 void	free_split(char **tab)
 {
 	int	i;
@@ -102,11 +92,6 @@ void	free_split(char **tab)
 	if (!tab)
 		return ;
 	while (tab[i])
-	{
-		free(tab[i]);
-		tab[i] = NULL;
-		i++;
-	}
+		free(tab[i++]);
 	free(tab);
 }
-

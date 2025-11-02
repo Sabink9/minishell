@@ -27,25 +27,25 @@ int	ft_echo(char **split)
 	return (0);
 }
 
-int	unclosed_quote(const char *line)
+static int	unclosed_quote(const char *s)
 {
 	int		i;
-	char	quote;
+	char	q;
 
 	i = 0;
-	quote = 0;
-	while (line[i])
+	q = 0;
+	while (s[i])
 	{
-		if (line[i] == '\'' || line[i] == '"')
+		if (s[i] == '\'' || s[i] == '"')
 		{
-			if (!quote)
-				quote = line[i];
-			else if (quote == line[i])
-				quote = 0;
+			if (!q)
+				q = s[i];
+			else if (q == s[i])
+				q = 0;
 		}
 		i++;
 	}
-	return (quote != 0);
+	return (q != 0);
 }
 
 char	*read_full_line(void)
@@ -55,13 +55,31 @@ char	*read_full_line(void)
 	char	*joined;
 
 	line = readline("$> ");
-	if (!line)
+	if (!line) /* Ctrl-D au prompt => quitter proprement */
 		return (NULL);
+	/* ⬇️ IMPORTANT : si Ctrl-C a frappé pendant le prompt */
+	if (g_sig == SIGINT)
+	{
+		g_sig = 0;
+		free(line);
+		return (ft_strdup("")); /* ligne vide => main continuera au prompt */
+	}
 	while (unclosed_quote(line))
 	{
 		tmp = readline("> ");
 		if (!tmp)
-			break ;
+		{ /* Ctrl-D en continuation => on annule */
+			free(line);
+			return (ft_strdup(""));
+		}
+		/* ⬇️ Ctrl-C pendant la continuation */
+		if (g_sig == SIGINT)
+		{
+			g_sig = 0;
+			free(tmp);
+			free(line);
+			return (ft_strdup(""));
+		}
 		joined = ft_strjoin(line, tmp);
 		free(line);
 		free(tmp);
