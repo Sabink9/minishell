@@ -1,5 +1,5 @@
-#include "mini.h"
 #include "../libft/libft.h"
+#include "mini.h"
 
 /* récupère la valeur d’une variable env */
 static char	*get_env_value(char *name, char **envp)
@@ -47,20 +47,22 @@ static char	*expand_env_var(char *res, char *line, int *i, char **envp)
 	char	name[256];
 	int		j;
 	int		k;
+	char	*val;
 
 	j = *i + 1;
-	while (line[j] && ((line[j] >= 'a' && line[j] <= 'z')
-			|| (line[j] >= 'A' && line[j] <= 'Z')
-			|| (line[j] >= '0' && line[j] <= '9') || line[j] == '_'))
-		j++;
 	k = 0;
-	while (*i + 1 + k < j && k < 255)
+	/* Lire le nom de la variable */
+	while (line[j] && ((line[j] >= 'a' && line[j] <= 'z') || (line[j] >= 'A'
+				&& line[j] <= 'Z') || (line[j] >= '0' && line[j] <= '9')
+			|| line[j] == '_'))
 	{
-		name[k] = line[*i + 1 + k];
-		k++;
+		name[k++] = line[j];
+		j++;
 	}
 	name[k] = '\0';
-	res = strjoin_free(res, get_env_value(name, envp));
+	val = get_env_value(name, envp);
+	/* Ajouter la valeur */
+	res = strjoin_free(res, val);
 	*i = j;
 	return (res);
 }
@@ -84,13 +86,30 @@ char	*expand_variables(char *line, char **envp, int last_exit)
 	i = 0;
 	while (line[i])
 	{
-		if (line[i] == '$' && line[i + 1])
+		if (line[i] == '$')
 		{
+			/* $?: code retour */
 			if (line[i + 1] == '?')
+			{
 				res = expand_exit_status(res, &i, last_exit);
-			else
+					/* fait avancer i (saute '$' et '?') */
+				continue ;
+			}
+			/* $NAME: expansion normale */
+			else if (line[i + 1] && (ft_isalnum((unsigned char)line[i + 1])
+						|| line[i + 1] == '_'))
+			{
 				res = expand_env_var(res, line, &i, envp);
-			continue ;
+					/* fait avancer i jusqu’à la fin du nom */
+				continue ;
+			}
+			/* $ suivi d’un séparateur/char non valide → garder le '$' littéral et AVANCER i */
+			else
+			{
+				res = strjoin_char_free(res, '$');
+				i++; /* <<— essentiel pour éviter la boucle */
+				continue ;
+			}
 		}
 		res = append_char(res, line[i]);
 		i++;

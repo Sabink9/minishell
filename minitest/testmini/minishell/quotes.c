@@ -16,13 +16,13 @@ char	*process_quotes(char *line)
 	q = 0;
 	while (line[i])
 	{
-		if ((line[i] == '\'' || line[i] == '\"'))
+		if (line[i] == '\'' || line[i] == '\"')
 		{
 			if (q == 0)
-				q = line[i];
+				q = line[i]; /* on ouvre */
 			else if (q == line[i])
-				q = 0;
-			/* ⬇️ on CONSERVE les quotes */
+				q = 0; /* on ferme */
+			/* >>> on CONSERVE la quote pour que ft_split voie la zone protégée */
 			res = strjoin_char_free(res, line[i]);
 			i++;
 			continue ;

@@ -3,6 +3,19 @@
 
 /* ---------- heredoc ---------- */
 
+static void	remove_n_tokens(char **args, int pos, int n)
+{
+	int	j;
+
+	j = pos;
+	while (args[j + n])
+	{
+		args[j] = args[j + n];
+		j++;
+	}
+	args[j] = NULL;
+}
+
 static int	delim_is_quoted(const char *s)
 {
 	int	i;
@@ -136,29 +149,32 @@ static char	*unquote_token(const char *s)
 	char	q;
 	char	*out;
 	int		k;
-	int		c;
+	char	c;
 
+	if (!s)
+		return (NULL);
+	out = malloc(ft_strlen(s) + 1);
+	if (!out)
+		return (NULL);
 	i = 0;
 	k = 0;
 	q = 0;
-	out = malloc(ft_strlen((char *)s) + 1);
-	if (!out)
-		return (NULL);
 	while (s[i])
 	{
 		c = s[i];
-		if (c == '\'' || c == '\"')
+		if (c == '\'' || c == '"')
 		{
-			if (!q)
-				q = c;
+			if (q == 0)
+				q = c; /* on ouvre */
 			else if (q == c)
-				q = 0;
-			/* on NE copie PAS la quote */
+				q = 0; /* on ferme */
+			else
+				out[k++] = c; /* ⚠️ quote différente → on la garde */
 		}
 		else
 		{
 			if (c == (char)-1)
-				c = '$'; /* remet $ visible */
+				c = '$'; /* remet le $ */
 			out[k++] = c;
 		}
 		i++;
@@ -200,39 +216,40 @@ char	**compact_argv(char **args)
 /* avant: int handle_redirections(char **args) */
 int	handle_redirections(char **args, char **envp, int last_exit)
 {
-	int	i;
-	int	hd;
+	int		i;
+	int		hd;
+	int		has_quote;
+	char	*fname;
+	int		r;
+	int		append;
+	char	*fname_raw;
 
 	i = 0;
 	while (args && args[i])
 	{
+		has_quote = (ft_strchr(args[i], '\'') || ft_strchr(args[i], '"'));
+		/* 1) Si le token contient des quotes MAIS ne commence pas par < ou >,
+				c'est un littéral → on ignore pour les redirs */
+		if (has_quote && !(args[i][0] == '<' || args[i][0] == '>'))
+		{
+			i++;
+			continue ;
+		}
+		/* 2) Opérateurs "propres" avec espace:  <  >  >>  << */
 		if (!ft_strcmp(args[i], "<") || !ft_strcmp(args[i], ">")
 			|| !ft_strcmp(args[i], ">>") || !ft_strcmp(args[i], "<<"))
 		{
+			fname = NULL;
 			if (!args[i + 1])
 			{
 				const char *msg =
 					"minishell: syntax error near unexpected token `newline'\n";
-				write(2, msg, ft_strlen((char *)msg));
+				write(2, msg, ft_strlen(msg));
 				return (-1);
 			}
-			if (!ft_strcmp(args[i], "<"))
+			if (!ft_strcmp(args[i], "<<"))
 			{
-				if (redir_in(args[i + 1]))
-					return (-1);
-			}
-			else if (!ft_strcmp(args[i], ">"))
-			{
-				if (redir_out(args[i + 1], 0))
-					return (-1);
-			}
-			else if (!ft_strcmp(args[i], ">>"))
-			{
-				if (redir_out(args[i + 1], 1))
-					return (-1);
-			}
-			else
-			{ /* "<<": heredoc */
+				/* heredoc: handle_heredoc enlève déjà les quotes du délimiteur */
 				hd = handle_heredoc(args[i + 1], envp, last_exit);
 				if (hd == -1)
 					return (-1);
@@ -246,14 +263,64 @@ int	handle_redirections(char **args, char **envp, int last_exit)
 				}
 				close(hd);
 			}
-			args[i] = NULL;
-			args[i + 1] = NULL;
-			i += 2;
+			else
+			{
+				/* déquote le nom de fichier avant open() */
+				fname = unquote_token(args[i + 1]);
+				if (!fname)
+					return (-1);
+				if (!ft_strcmp(args[i], "<"))
+					r = redir_in(fname);
+				else if (!ft_strcmp(args[i], ">"))
+					r = redir_out(fname, 0);
+				else /* ">>" */
+					r = redir_out(fname, 1);
+				free(fname);
+				if (r != 0)
+					return (-1);
+			}
+			/* on retire les deux tokens consommés */
+			remove_n_tokens(args, i, 2);
+			continue ;
 		}
-		else
+		/* 3) Opérateurs collés au nom:  <file   >file   >>file */
+		if (args[i][0] == '<' || args[i][0] == '>')
 		{
-			i++;
+			append = 0;
+			if (args[i][0] == '<')
+			{
+				fname_raw = args[i] + 1;
+			}
+			else /* '>' */
+			{
+				if (args[i][1] == '>')
+				{
+					append = 1;
+					fname_raw = args[i] + 2;
+				}
+				else
+				{
+					fname_raw = args[i] + 1;
+				}
+			}
+			if (*fname_raw) /* il y a bien un nom collé après l'opérateur */
+			{
+				fname = unquote_token(fname_raw);
+				if (!fname)
+					return (-1);
+				if (args[i][0] == '<')
+					r = redir_in(fname);
+				else
+					r = redir_out(fname, append);
+				free(fname);
+				if (r != 0)
+					return (-1);
+				remove_n_tokens(args, i, 1); /* token consommé */
+				continue ;
+			}
+			/* sinon: juste "<" ou ">" sans nom → laissé au cas (2) */
 		}
+		i++;
 	}
 	return (0);
 }

@@ -9,7 +9,7 @@ char	**handle_command(char **envp, char **split, int *exit_status)
 	int		saved_out;
 	char	**argv;
 	int		rc;
-	int		st;
+		char **new_env;
 
 	if (!split || !split[0])
 		return (envp);
@@ -29,7 +29,10 @@ char	**handle_command(char **envp, char **split, int *exit_status)
 	rc = handle_redirections(split, envp, *exit_status);
 	if (rc != 0)
 	{
-		*exit_status = (rc == -2) ? 130 : 1;
+		if (rc == -2)
+			*exit_status = 130;
+		else
+			*exit_status = 1;
 		restore_std_fds(saved_in, saved_out);
 		return (envp);
 	}
@@ -50,17 +53,37 @@ char	**handle_command(char **envp, char **split, int *exit_status)
 	else if (!ft_strcmp(argv[0], "pwd"))
 		*exit_status = ft_pwd();
 	else if (!ft_strcmp(argv[0], "export"))
-		(envp = ft_export(envp, argv), *exit_status = 0);
+	{
+		new_env = ft_export(envp, argv, exit_status);
+		if (new_env && new_env != envp)
+		{
+			free_split(envp);
+			envp = new_env;
+		}
+	}
 	else if (!ft_strcmp(argv[0], "cd"))
-		*exit_status = ft_cd(argv, envp);
+	{
+		if (argv[1] && argv[2])
+		{
+			write(2, "minishell: cd: too many arguments\n", 34);
+			*exit_status = 1;
+		}
+		else
+			*exit_status = ft_cd(argv, envp);
+	}
 	else if (!ft_strcmp(argv[0], "env"))
 		*exit_status = ft_env(argv, envp);
 	else if (!ft_strcmp(argv[0], "exit"))
 		ft_exit(argv, exit_status, 0);
 	else if (!ft_strcmp(argv[0], "unset"))
 	{
-		st = ft_unset(argv, &envp);
-		*exit_status = st;
+		new_env = NULL;
+		*exit_status = ft_unset(argv, &new_env);
+		if (new_env)
+		{
+			free_split(envp);
+			envp = new_env;
+		}
 	}
 	else
 		*exit_status = exec_command(argv, envp);

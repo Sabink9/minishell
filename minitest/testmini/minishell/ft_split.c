@@ -2,17 +2,17 @@
 #include "mini.h"
 
 /* saute espaces/tabs */
-static int	is_space(int c)
-{
-	return (c == ' ' || c == '\t');
-}
+// static int	is_space(int c)
+// {
+// 	return (c == ' ' || c == '\t');
+// }
 
 /* duplique brut le segment [start, end) SANS enlever les quotes */
 static char	*dup_raw(const char *s, int start, int end)
 {
 	char	*out;
 	int		i;
-	int	k;
+	int		k;
 
 	out = malloc(end - start + 1);
 	i = start;
@@ -26,28 +26,41 @@ static char	*dup_raw(const char *s, int start, int end)
 }
 
 /* Split: ignore espaces hors-quotes, conserve les quotes dans les tokens */
+/* Split: ignore espaces hors-quotes, conserve les quotes dans les tokens */
+static void	free_partial(char **tab, int count)
+{
+	int	k;
+
+	k = 0;
+	while (k < count)
+	{
+		free(tab[k]);
+		k++;
+	}
+	free(tab);
+}
+
 char	**ft_split(char *s)
 {
-	int	i;
-	int	q;
-	int	count;
-	int	cap;
-	int	start;
-	int	j;
+	int		i;
+	int		start;
+	int		q;
+	int		count;
+	int		cap;
+	char	**tab;
+	char	c;
 
-	i = 0;
-	q = 0;
-	count = 0;
-	char **tab, c;
 	if (!s)
 		return (NULL);
-	cap = (int)ft_strlen((char *)s) / 2 + 2;
-	tab = malloc(sizeof(char *) * cap);
+	cap = (int)ft_strlen(s) / 2 + 2;
+	tab = (char **)malloc(sizeof(char *) * cap);
 	if (!tab)
 		return (NULL);
+	i = 0;
+	count = 0;
 	while (s[i])
 	{
-		while (s[i] && is_space(s[i]))
+		while (s[i] && (s[i] == ' ' || s[i] == '\t'))
 			i++;
 		if (!s[i])
 			break ;
@@ -58,27 +71,50 @@ char	**ft_split(char *s)
 			c = s[i];
 			if (c == '\'' || c == '\"')
 			{
-				if (!q)
+				if (q == 0)
 					q = c;
 				else if (q == c)
 					q = 0;
 				i++;
 				continue ;
 			}
-			if (!q && is_space(c))
+			if (q == 0 && c == '|')
+			{
+				if (i > start)
+				{
+					tab[count] = dup_raw(s, start, i);
+					if (!tab[count])
+					{
+						free_partial(tab, count);
+						return (NULL);
+					}
+					count++;
+				}
+				tab[count] = dup_raw(s, i, i + 1); /* "|" */
+				if (!tab[count])
+				{
+					free_partial(tab, count);
+					return (NULL);
+				}
+				count++;
+				i++;
+				start = i;
+				break ;
+			}
+			if (q == 0 && (c == ' ' || c == '\t'))
 				break ;
 			i++;
 		}
-		tab[count] = dup_raw(s, start, i);
-		if (!tab[count])
+		if (start < i)
 		{
-			j = 0;
-			while (j < count)
-				free(tab[j++]);
-			free(tab);
-			return (NULL);
+			tab[count] = dup_raw(s, start, i);
+			if (!tab[count])
+			{
+				free_partial(tab, count);
+				return (NULL);
+			}
+			count++;
 		}
-		count++;
 	}
 	tab[count] = NULL;
 	return (tab);

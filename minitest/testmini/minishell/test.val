@@ -1,0 +1,5 @@
+echo hello
+pwd
+export VAR=42
+echo $VAR
+exit

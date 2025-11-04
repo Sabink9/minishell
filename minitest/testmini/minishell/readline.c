@@ -1,29 +1,35 @@
 #include "../libft/libft.h"
 #include "mini.h"
 
-int	ft_echo(char **split)
+int	ft_echo(char **argv)
 {
 	int	i;
 	int	no_newline;
+	int	first;
+	int	len;
 
+	if (!argv || !argv[0] || ft_strcmp(argv[0], "echo") != 0)
+		return (1);
 	i = 1;
 	no_newline = 0;
-	if (!split[0] || ft_strcmp(split[0], "echo") != 0)
-		return (1);
-	if (split[1] && ft_strcmp(split[1], "-n") == 0)
+	if (argv[1] && ft_strcmp(argv[1], "-n") == 0)
 	{
 		no_newline = 1;
 		i = 2;
 	}
-	while (split[i])
+	first = 1;
+	while (argv[i])
 	{
-		printf("%s", split[i]);
-		if (split[i + 1])
-			printf(" ");
+		len = ft_strlen(argv[i]);
+		if (!first)
+			write(1, " ", 1);
+		if (len > 0)
+			write(1, argv[i], len);
+		first = 0;
 		i++;
 	}
 	if (!no_newline)
-		printf("\n");
+		write(1, "\n", 1);
 	return (0);
 }
 

@@ -1,5 +1,5 @@
-#include "mini.h"
 #include "../libft/libft.h"
+#include "mini.h"
 
 int	envp_size(char **envp)
 {
@@ -44,9 +44,14 @@ char	*make_env_var(const char *key, const char *value)
 	int		i;
 	int		j;
 	char	*new_var;
+	int		len_key;
+	int		len_value;
 
-	new_var = malloc(ft_strlen(key)
-			+ (value ? ft_strlen(value) : 0) + 2);
+	len_key = ft_strlen(key);
+	len_value = 0;
+	if (value)
+		len_value = ft_strlen(value);
+	new_var = malloc(len_key + len_value + 2);
 	if (!new_var)
 		return (NULL);
 	i = 0;
@@ -62,4 +67,3 @@ char	*make_env_var(const char *key, const char *value)
 	new_var[i] = '\0';
 	return (new_var);
 }
-

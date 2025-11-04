@@ -68,7 +68,7 @@ int	ft_exit(char **args, int *exit_status, int is_child)
 		ft_putstr_fd2("minishell: exit: ");
 		ft_putstr_fd2(args[1]);
 		ft_putstr_fd2(": numeric argument required\n");
-		exit(255);
+		exit(2);
 	}
 	if (args[1] && args[2])
 	{

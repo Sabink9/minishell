@@ -6,7 +6,7 @@
 /*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/31 17:16:12 by saciurus          #+#    #+#             */
-/*   Updated: 2025/11/04 16:14:16 by saciurus         ###   ########.fr       */
+/*   Updated: 2025/11/04 18:34:33 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,8 @@ char							**set_env_var(char **envp, const char *key,
 									const char *value);
 void							split_key_value(const char *str, char **key,
 									char **value);
-char							**ft_export(char **envp, char **args);
+char							**ft_export(char **envp, char **argv,
+									int *exit_status);
 char							*read_full_line(void);
 int								has_pipe(char **split);
 int								ft_env(char **args, char **envp);
