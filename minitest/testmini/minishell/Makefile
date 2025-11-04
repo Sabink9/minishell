@@ -8,6 +8,7 @@ SRCS =	expand.c \
 	ft_cd.c \
 	ft_pwd.c \
 	ft_split.c \
+	ft_unset.c \
 	main.c \
 	parse_pipe.c \
 	path.c \

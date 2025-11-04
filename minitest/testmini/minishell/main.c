@@ -9,10 +9,10 @@ char	**handle_command(char **envp, char **split, int *exit_status)
 	int		saved_out;
 	char	**argv;
 	int		rc;
+	int		st;
 
 	if (!split || !split[0])
 		return (envp);
-	/* --- PIPE --- */
 	if (has_pipe(split))
 	{
 		cmdv = parse_pipes(split, &cmd_count);
@@ -22,7 +22,6 @@ char	**handle_command(char **envp, char **split, int *exit_status)
 		free_cmdv(cmdv);
 		return (envp);
 	}
-	/* --- REDIRS + BUILTINS/EXEC (commande simple) --- */
 	saved_in = dup(STDIN_FILENO);
 	saved_out = dup(STDOUT_FILENO);
 	if (saved_in < 0 || saved_out < 0)
@@ -30,7 +29,7 @@ char	**handle_command(char **envp, char **split, int *exit_status)
 	rc = handle_redirections(split, envp, *exit_status);
 	if (rc != 0)
 	{
-		*exit_status = (rc == -2) ? 130 : 1; /* ^C HDOC -> 130, sinon 1 */
+		*exit_status = (rc == -2) ? 130 : 1;
 		restore_std_fds(saved_in, saved_out);
 		return (envp);
 	}
@@ -41,7 +40,7 @@ char	**handle_command(char **envp, char **split, int *exit_status)
 		return (envp);
 	}
 	if (!argv[0])
-	{ /* ex: juste “> a.txt” */
+	{
 		free_split(argv);
 		restore_std_fds(saved_in, saved_out);
 		return (envp);
@@ -57,7 +56,12 @@ char	**handle_command(char **envp, char **split, int *exit_status)
 	else if (!ft_strcmp(argv[0], "env"))
 		*exit_status = ft_env(argv, envp);
 	else if (!ft_strcmp(argv[0], "exit"))
-		ft_exit(argv, exit_status, 0); /* parent only */
+		ft_exit(argv, exit_status, 0);
+	else if (!ft_strcmp(argv[0], "unset"))
+	{
+		st = ft_unset(argv, &envp);
+		*exit_status = st;
+	}
 	else
 		*exit_status = exec_command(argv, envp);
 	free_split(argv);
@@ -65,14 +69,18 @@ char	**handle_command(char **envp, char **split, int *exit_status)
 	return (envp);
 }
 
-int	main(int argc, char **argv, char **envp)
+int	main(int argc, char **argv, char **envp_sys)
 {
 	int		exit_status;
 	char	*line;
 	char	**split_line;
+	char	**envp;
 
 	(void)argc;
 	(void)argv;
+	envp = ft_env_dup(envp_sys);
+	if (!envp)
+		return (1);
 	exit_status = 0;
 	setup_interactive_signals();
 	while (1)
@@ -87,10 +95,9 @@ int	main(int argc, char **argv, char **envp)
 		{
 			exit_status = 130;
 			g_sig = 0;
-			free (line);
+			free(line);
 			continue ;
 		}
-		// 🔹 Si la ligne est vide, on repart directement
 		if (*line == '\0')
 		{
 			free(line);
@@ -101,13 +108,11 @@ int	main(int argc, char **argv, char **envp)
 		line = expand_variables(line, envp, exit_status);
 		split_line = ft_split(line);
 		if (split_line && split_line[0])
-		{
-			if (split_line && split_line[0])
-				envp = handle_command(envp, split_line, &exit_status);
-		}
+			envp = handle_command(envp, split_line, &exit_status);
 		free_split(split_line);
 		free(line);
 	}
 	rl_clear_history();
+	free_split(envp);
 	return (exit_status);
 }

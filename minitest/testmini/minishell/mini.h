@@ -6,7 +6,7 @@
 /*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/31 17:16:12 by saciurus          #+#    #+#             */
-/*   Updated: 2025/11/02 19:00:53 by saciurus         ###   ########.fr       */
+/*   Updated: 2025/11/04 16:14:16 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,5 +90,6 @@ int								ft_is_numeric(const char *s);
 void							ft_putstr_fd2(char *s);
 long							ft_atol(const char *str);
 char							**compact_argv(char **args);
-
+int								ft_unset(char **args, char ***penvp);
+char							**ft_env_dup(char **envp);
 #endif

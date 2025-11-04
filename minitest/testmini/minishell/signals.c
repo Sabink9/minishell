@@ -1,4 +1,3 @@
-/* signals.c */
 #include "mini.h"
 #include <readline/readline.h>
 #include <unistd.h>
@@ -10,10 +9,11 @@ void	sigint_handler(int sig)
 	(void)sig;
 	g_sig = SIGINT;
 	write(1, "\n", 1);
-	/* on efface la ligne en cours et on passe à une nouvelle ligne,
-		PAS de rl_redisplay ici (ça évite le double $> et les états bizarres) */
 	rl_replace_line("", 0);
 	rl_on_new_line();
+	/* >>> clé : dire à readline d’arrêter et de retourner tout de suite */
+	rl_redisplay();
+	rl_done = 1;
 }
 
 static void	sigquit_handler(int sig)
@@ -25,10 +25,12 @@ void	setup_interactive_signals(void)
 {
 	struct sigaction	sa;
 
+	/* SIGINT: ne pas utiliser SA_RESTART pour le prompt */
 	sigemptyset(&sa.sa_mask);
-	sa.sa_flags = SA_RESTART;
+	sa.sa_flags = 0; /* <<< au lieu de SA_RESTART */
 	sa.sa_handler = sigint_handler;
 	sigaction(SIGINT, &sa, NULL);
+	/* SIGQUIT: tu peux garder SA_RESTART */
 	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = SA_RESTART;
 	sa.sa_handler = sigquit_handler;

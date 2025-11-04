@@ -57,28 +57,23 @@ char	*read_full_line(void)
 	line = readline("$> ");
 	if (!line) /* Ctrl-D au prompt => quitter proprement */
 		return (NULL);
-	/* ⬇️ IMPORTANT : si Ctrl-C a frappé pendant le prompt */
-	if (g_sig == SIGINT)
-	{
-		g_sig = 0;
-		free(line);
-		return (ft_strdup("")); /* ligne vide => main continuera au prompt */
-	}
+	/* >>> NE PLUS TOUCHER A g_sig ICI <<< */
 	while (unclosed_quote(line))
 	{
 		tmp = readline("> ");
 		if (!tmp)
-		{ /* Ctrl-D en continuation => on annule */
+		{ /* Ctrl-D pendant continuation => annuler */
 			free(line);
 			return (ft_strdup(""));
+			/* ligne vide => main fera juste un prompt */
 		}
-		/* ⬇️ Ctrl-C pendant la continuation */
 		if (g_sig == SIGINT)
 		{
-			g_sig = 0;
+			/* Ctrl-C pendant la continuation : on annule la saisie */
 			free(tmp);
 			free(line);
 			return (ft_strdup(""));
+			/* ligne vide => main verra g_sig et mettra 130 */
 		}
 		joined = ft_strjoin(line, tmp);
 		free(line);
