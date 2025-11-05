@@ -2,6 +2,15 @@
 #include "mini.h"
 
 /* pré-traite la ligne : supprime les quotes et marque les zones protégées */
+static void	update_quote_and_append(char **res, char c, char *q)
+{
+	if (*q == 0)
+		*q = c;        /* on ouvre */
+	else if (*q == c)
+		*q = 0;        /* on ferme */
+	*res = strjoin_char_free(*res, c); /* on CONSERVE la quote */
+}
+
 char	*process_quotes(char *line)
 {
 	char	*res;
@@ -18,12 +27,7 @@ char	*process_quotes(char *line)
 	{
 		if (line[i] == '\'' || line[i] == '\"')
 		{
-			if (q == 0)
-				q = line[i]; /* on ouvre */
-			else if (q == line[i])
-				q = 0; /* on ferme */
-			/* >>> on CONSERVE la quote pour que ft_split voie la zone protégée */
-			res = strjoin_char_free(res, line[i]);
+			update_quote_and_append(&res, line[i], &q);
 			i++;
 			continue ;
 		}

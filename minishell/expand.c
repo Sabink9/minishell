@@ -74,11 +74,30 @@ static char	*append_char(char *res, char c)
 	return (strjoin_char_free(res, c));
 }
 
+/* Gère l'expansion après un '$' dans la ligne */
+static char	*handle_dollar(char *res, char *line, int *i, char **envp,
+		int last_exit)
+{
+	/* $?: expansion du code de retour */
+	if (line[*i + 1] == '?')
+		return (expand_exit_status(res, i, last_exit));
+	/* $NAME: expansion d'une variable d'environnement */
+	if (line[*i + 1] && (ft_isalnum((unsigned char)line[*i + 1]) || line[*i
+			+ 1] == '_'))
+		return (expand_env_var(res, line, i, envp));
+	/* '$' suivi d'un caractère non valide → conserver '$' littéral */
+	res = strjoin_char_free(res, '$');
+	(*i)++;
+	return (res);
+}
+
+/* Parcourt la ligne et remplace les variables $VAR et $? */
 char	*expand_variables(char *line, char **envp, int last_exit)
 {
 	char	*res;
 	int		i;
 
+	/* résultat initial vide */
 	res = malloc(1);
 	if (!res)
 		return (NULL);
@@ -86,31 +105,13 @@ char	*expand_variables(char *line, char **envp, int last_exit)
 	i = 0;
 	while (line[i])
 	{
+		/* lorsqu'on rencontre '$', traitement spécial */
 		if (line[i] == '$')
 		{
-			/* $?: code retour */
-			if (line[i + 1] == '?')
-			{
-				res = expand_exit_status(res, &i, last_exit);
-					/* fait avancer i (saute '$' et '?') */
-				continue ;
-			}
-			/* $NAME: expansion normale */
-			else if (line[i + 1] && (ft_isalnum((unsigned char)line[i + 1])
-						|| line[i + 1] == '_'))
-			{
-				res = expand_env_var(res, line, &i, envp);
-					/* fait avancer i jusqu’à la fin du nom */
-				continue ;
-			}
-			/* $ suivi d’un séparateur/char non valide → garder le '$' littéral et AVANCER i */
-			else
-			{
-				res = strjoin_char_free(res, '$');
-				i++; /* <<— essentiel pour éviter la boucle */
-				continue ;
-			}
+			res = handle_dollar(res, line, &i, envp, last_exit);
+			continue ;
 		}
+		/* sinon, copier le caractère dans le résultat */
 		res = append_char(res, line[i]);
 		i++;
 	}

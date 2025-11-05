@@ -1,5 +1,5 @@
-#include "mini.h"
 #include "../libft/libft.h"
+#include "mini.h"
 
 static char	*get_env_value(char **envp, const char *key)
 {
@@ -42,7 +42,8 @@ static void	set_env_value(char **envp, const char *key, const char *value)
 	}
 }
 
-static int	change_directory(char **args, char **envp, char *oldpwd, char *newpwd)
+static int	change_directory(char **args, char **envp, char *oldpwd,
+		char *newpwd)
 {
 	char	*target;
 

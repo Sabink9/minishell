@@ -15,21 +15,18 @@ int	ft_pwd(void)
 	free(cwd);
 	return (0);
 }
+
 int	ft_env(char **args, char **envp)
 {
 	int	i;
 
 	// 🔹 Vérifie s'il y a un vrai argument (pas une redirection)
-	if (args[1]
-		&& ft_strcmp(args[1], ">") != 0
-		&& ft_strcmp(args[1], ">>") != 0
-		&& ft_strcmp(args[1], "<") != 0
-		&& ft_strcmp(args[1], "<<") != 0)
+	if (args[1] && ft_strcmp(args[1], ">") != 0 && ft_strcmp(args[1], ">>") != 0
+		&& ft_strcmp(args[1], "<") != 0 && ft_strcmp(args[1], "<<") != 0)
 	{
 		printf("minishell: env: %s: No such file or directory\n", args[1]);
 		return (127);
 	}
-
 	// 🔹 Affiche toutes les variables d'environnement
 	i = 0;
 	while (envp && envp[i])

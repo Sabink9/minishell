@@ -87,6 +87,7 @@ char	*find_executable(char *cmd, char **envp)
 	return (search_in_path(path_env, cmd)); /* NULL si introuvable */
 }
 
+
 /* ---------- exec_command.c ---------- */
 int	exec_command(char **args, char **envp)
 {

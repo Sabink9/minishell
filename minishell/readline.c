@@ -1,22 +1,11 @@
 #include "../libft/libft.h"
 #include "mini.h"
 
-int	ft_echo(char **argv)
+static void	print_args(char **argv, int i)
 {
-	int	i;
-	int	no_newline;
 	int	first;
 	int	len;
 
-	if (!argv || !argv[0] || ft_strcmp(argv[0], "echo") != 0)
-		return (1);
-	i = 1;
-	no_newline = 0;
-	if (argv[1] && ft_strcmp(argv[1], "-n") == 0)
-	{
-		no_newline = 1;
-		i = 2;
-	}
 	first = 1;
 	while (argv[i])
 	{
@@ -28,6 +17,23 @@ int	ft_echo(char **argv)
 		first = 0;
 		i++;
 	}
+}
+
+int	ft_echo(char **argv)
+{
+	int	i;
+	int	no_newline;
+
+	if (!argv || !argv[0] || ft_strcmp(argv[0], "echo") != 0)
+		return (1);
+	i = 1;
+	no_newline = 0;
+	if (argv[1] && ft_strcmp(argv[1], "-n") == 0)
+	{
+		no_newline = 1;
+		i = 2;
+	}
+	print_args(argv, i);
 	if (!no_newline)
 		write(1, "\n", 1);
 	return (0);
@@ -54,32 +60,24 @@ static int	unclosed_quote(const char *s)
 	return (q != 0);
 }
 
-char	*read_full_line(void)
+static char	*continue_line(char *line)
 {
-	char	*line;
 	char	*tmp;
 	char	*joined;
 
-	line = readline("$> ");
-	if (!line) /* Ctrl-D au prompt => quitter proprement */
-		return (NULL);
-	/* >>> NE PLUS TOUCHER A g_sig ICI <<< */
 	while (unclosed_quote(line))
 	{
 		tmp = readline("> ");
 		if (!tmp)
-		{ /* Ctrl-D pendant continuation => annuler */
+		{
 			free(line);
 			return (ft_strdup(""));
-			/* ligne vide => main fera juste un prompt */
 		}
 		if (g_sig == SIGINT)
 		{
-			/* Ctrl-C pendant la continuation : on annule la saisie */
 			free(tmp);
 			free(line);
 			return (ft_strdup(""));
-			/* ligne vide => main verra g_sig et mettra 130 */
 		}
 		joined = ft_strjoin(line, tmp);
 		free(line);
@@ -88,6 +86,17 @@ char	*read_full_line(void)
 			return (NULL);
 		line = joined;
 	}
+	return (line);
+}
+
+char	*read_full_line(void)
+{
+	char	*line;
+
+	line = readline("$> ");
+	if (!line)
+		return (NULL);
+	line = continue_line(line);
 	return (line);
 }
 

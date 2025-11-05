@@ -143,43 +143,43 @@ int	handle_heredoc(char *delim, char **envp, int last_exit)
 	return (pfd[0]); /* FD prêt à dup2(STDIN_FILENO) */
 }
 
-static char	*unquote_token(const char *s)
+static void	copy_unquoted(const char *s, char *out)
 {
 	int		i;
-	char	q;
-	char	*out;
 	int		k;
+	char	q;
 	char	c;
 
-	if (!s)
-		return (NULL);
-	out = malloc(ft_strlen(s) + 1);
-	if (!out)
-		return (NULL);
 	i = 0;
 	k = 0;
 	q = 0;
 	while (s[i])
 	{
 		c = s[i];
-		if (c == '\'' || c == '"')
+		if (c == '\'' || c == '\"')
 		{
-			if (q == 0)
-				q = c; /* on ouvre */
-			else if (q == c)
-				q = 0; /* on ferme */
+			if (q == 0 || q == c)
+				q = (q == 0) ? c : 0;
 			else
-				out[k++] = c; /* ⚠️ quote différente → on la garde */
+				out[k++] = c;
 		}
 		else
-		{
-			if (c == (char)-1)
-				c = '$'; /* remet le $ */
-			out[k++] = c;
-		}
+			out[k++] = (c == (char)-1) ? '$' : c;
 		i++;
 	}
 	out[k] = '\0';
+}
+
+static char	*unquote_token(const char *s)
+{
+	char	*out;
+
+	if (!s)
+		return (NULL);
+	out = malloc(ft_strlen(s) + 1);
+	if (!out)
+		return (NULL);
+	copy_unquoted(s, out);
 	return (out);
 }
 

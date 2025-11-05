@@ -12,8 +12,8 @@ static int	is_valid_identifier(const char *s)
 	i = 1;
 	while (s[i] && s[i] != '=')
 	{
-		if (!((s[i] >= 'A' && s[i] <= 'Z') || (s[i] >= 'a' && s[i] <= 'z') ||
-				(s[i] >= '0' && s[i] <= '9') || s[i] == '_'))
+		if (!((s[i] >= 'A' && s[i] <= 'Z') || (s[i] >= 'a' && s[i] <= 'z')
+				|| (s[i] >= '0' && s[i] <= '9') || s[i] == '_'))
 			return (0);
 		i++;
 	}
@@ -76,14 +76,45 @@ void	split_key_value(const char *str, char **key, char **value)
 		*value = NULL;
 }
 
-char	**ft_export(char **envp, char **args, int *exit_status)
+static int	handle_export_arg(char ***envp, char *arg)
 {
-	int		i;
 	char	*key;
 	char	*value;
-	int		had_error;
 
+	if (!is_valid_identifier(arg))
+	{
+		write(2, "minishell: export: `", 20);
+		write(2, arg, ft_strlen(arg));
+		write(2, "': not a valid identifier\n", 26);
+		return (1);
+	}
+	split_key_value(arg, &key, &value);
+	*envp = set_env_var(*envp, key, value);
+	free(key);
+	free(value);
+	return (0);
+}
+
+static int	process_export_args(char ***envp, char **args)
+{
+	int	i;
+	int	had_error;
+
+	i = 1;
 	had_error = 0;
+	while (args[i])
+	{
+		if (handle_export_arg(envp, args[i]))
+			had_error = 1;
+		i++;
+	}
+	return (had_error);
+}
+
+char	**ft_export(char **envp, char **args, int *exit_status)
+{
+	int	had_error;
+
 	if (!args[1])
 	{
 		print_export(envp);
@@ -91,31 +122,8 @@ char	**ft_export(char **envp, char **args, int *exit_status)
 			*exit_status = 0;
 		return (envp);
 	}
-	i = 1;
-	while (args[i])
-	{
-		if (!is_valid_identifier(args[i]))
-		{
-			write(2, "minishell: export: `", 20);
-			write(2, args[i], ft_strlen(args[i]));
-			write(2, "': not a valid identifier\n", 26);
-			had_error = 1;
-		}
-		else
-		{
-			split_key_value(args[i], &key, &value);
-			envp = set_env_var(envp, key, value);
-			free(key);
-			free(value);
-		}
-		i++;
-	}
+	had_error = process_export_args(&envp, args);
 	if (exit_status)
-	{
-		if (had_error)
-			*exit_status = 1;
-		else
-			*exit_status = 0;
-	}
+		*exit_status = had_error;
 	return (envp);
 }
