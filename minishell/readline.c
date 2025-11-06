@@ -1,23 +1,17 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   readline.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sab <sab@student.42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/11/06 20:00:36 by sab               #+#    #+#             */
+/*   Updated: 2025/11/06 20:50:37 by sab              ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../libft/libft.h"
 #include "mini.h"
-
-static void	print_args(char **argv, int i)
-{
-	int	first;
-	int	len;
-
-	first = 1;
-	while (argv[i])
-	{
-		len = ft_strlen(argv[i]);
-		if (!first)
-			write(1, " ", 1);
-		if (len > 0)
-			write(1, argv[i], len);
-		first = 0;
-		i++;
-	}
-}
 
 int	ft_echo(char **argv)
 {

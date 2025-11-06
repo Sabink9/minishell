@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_pwd.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sab <sab@student.42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/11/06 20:00:08 by sab               #+#    #+#             */
+/*   Updated: 2025/11/06 20:05:31 by sab              ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../libft/libft.h"
 #include "mini.h"
 
@@ -20,14 +32,12 @@ int	ft_env(char **args, char **envp)
 {
 	int	i;
 
-	// 🔹 Vérifie s'il y a un vrai argument (pas une redirection)
 	if (args[1] && ft_strcmp(args[1], ">") != 0 && ft_strcmp(args[1], ">>") != 0
 		&& ft_strcmp(args[1], "<") != 0 && ft_strcmp(args[1], "<<") != 0)
 	{
 		printf("minishell: env: %s: No such file or directory\n", args[1]);
 		return (127);
 	}
-	// 🔹 Affiche toutes les variables d'environnement
 	i = 0;
 	while (envp && envp[i])
 	{

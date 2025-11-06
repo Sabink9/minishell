@@ -1,21 +1,33 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   quotes.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sab <sab@student.42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/11/06 20:00:33 by sab               #+#    #+#             */
+/*   Updated: 2025/11/06 20:17:49 by sab              ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../libft/libft.h"
 #include "mini.h"
 
 /* pré-traite la ligne : supprime les quotes et marque les zones protégées */
-static void	update_quote_and_append(char **res, char c, char *q)
+static void update_quote_and_append(char **res, char c, char *q)
 {
 	if (*q == 0)
-		*q = c;        /* on ouvre */
+		*q = c;
 	else if (*q == c)
-		*q = 0;        /* on ferme */
-	*res = strjoin_char_free(*res, c); /* on CONSERVE la quote */
+		*q = 0;
+	*res = strjoin_char_free(*res, c);
 }
 
-char	*process_quotes(char *line)
+char *process_quotes(char *line)
 {
-	char	*res;
-	int		i;
-	char	q;
+	char *res;
+	int i;
+	char q;
 
 	res = malloc(1);
 	if (!res)
@@ -29,10 +41,10 @@ char	*process_quotes(char *line)
 		{
 			update_quote_and_append(&res, line[i], &q);
 			i++;
-			continue ;
+			continue;
 		}
 		if (q == '\'' && line[i] == '$')
-			res = strjoin_char_free(res, (char)-1); /* bloque expansion */
+			res = strjoin_char_free(res, (char)-1);
 		else
 			res = strjoin_char_free(res, line[i]);
 		i++;

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   signals.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sab <sab@student.42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/11/06 20:00:44 by sab               #+#    #+#             */
+/*   Updated: 2025/11/06 20:19:00 by sab              ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "mini.h"
 #include <readline/readline.h>
 #include <unistd.h>
@@ -11,7 +23,6 @@ void	sigint_handler(int sig)
 	write(1, "\n", 1);
 	rl_replace_line("", 0);
 	rl_on_new_line();
-	/* >>> clé : dire à readline d’arrêter et de retourner tout de suite */
 	rl_redisplay();
 	rl_done = 1;
 }
@@ -25,12 +36,10 @@ void	setup_interactive_signals(void)
 {
 	struct sigaction	sa;
 
-	/* SIGINT: ne pas utiliser SA_RESTART pour le prompt */
 	sigemptyset(&sa.sa_mask);
-	sa.sa_flags = 0; /* <<< au lieu de SA_RESTART */
+	sa.sa_flags = 0;
 	sa.sa_handler = sigint_handler;
 	sigaction(SIGINT, &sa, NULL);
-	/* SIGQUIT: tu peux garder SA_RESTART */
 	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = SA_RESTART;
 	sa.sa_handler = sigquit_handler;

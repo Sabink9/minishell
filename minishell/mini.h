@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   mini.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sab <sab@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/31 17:16:12 by saciurus          #+#    #+#             */
-/*   Updated: 2025/11/04 18:34:33 by saciurus         ###   ########.fr       */
+/*   Updated: 2025/11/06 20:57:16 by sab              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,12 @@
 # include <sys/wait.h>
 # include <unistd.h>
 
+typedef struct s_expand
+{
+	char	**envp;
+	int		last_exit;
+}	t_expand;
+
 extern volatile sig_atomic_t	g_sig;
 
 void							setup_interactive_signals(void);
@@ -35,7 +41,7 @@ int								ft_pwd(void);
 int								ft_echo(char **split);
 int								ft_cd(char **args, char **envp);
 
-/* ----------------- EXEC / PATH ----------------- */
+// EXEC / PATH 
 char							*get_path_from_env(char **envp);
 char							*find_executable(char *cmd, char **envp);
 int								exec_command(char **args, char **envp);
@@ -44,7 +50,7 @@ int								exec_piped_commands(char ***cmdv, int n,
 char							***parse_pipes(char **split, int *n);
 void							free_cmdv(char ***cmdv);
 
-/* ----------------- UTILS ----------------- */
+// UTILS
 char							**ft_split(char *s);
 void							free_split(char **tab);
 int								ft_strcmp(char *s1, char *s2);
@@ -69,8 +75,8 @@ char							*process_quotes(char *line);
 int								envp_size(char **envp);
 int								find_env_index(char **envp, const char *key);
 void							print_export(char **envp);
-char	*make_env_var(const char *key,
-					const char *value);
+char							*make_env_var(const char *key,
+									const char *value);
 
 // export_utils2.c
 char							**append_env_var(char **envp, char *new_var,
@@ -93,4 +99,6 @@ long							ft_atol(const char *str);
 char							**compact_argv(char **args);
 int								ft_unset(char **args, char ***penvp);
 char							**ft_env_dup(char **envp);
+
+void	print_args(char **argv, int i);
 #endif

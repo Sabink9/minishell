@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   expand.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sab <sab@student.42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/11/06 19:59:50 by sab               #+#    #+#             */
+/*   Updated: 2025/11/06 21:07:36 by sab              ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../libft/libft.h"
 #include "mini.h"
 
@@ -51,7 +63,6 @@ static char	*expand_env_var(char *res, char *line, int *i, char **envp)
 
 	j = *i + 1;
 	k = 0;
-	/* Lire le nom de la variable */
 	while (line[j] && ((line[j] >= 'a' && line[j] <= 'z') || (line[j] >= 'A'
 				&& line[j] <= 'Z') || (line[j] >= '0' && line[j] <= '9')
 			|| line[j] == '_'))
@@ -61,7 +72,6 @@ static char	*expand_env_var(char *res, char *line, int *i, char **envp)
 	}
 	name[k] = '\0';
 	val = get_env_value(name, envp);
-	/* Ajouter la valeur */
 	res = strjoin_free(res, val);
 	*i = j;
 	return (res);
@@ -78,15 +88,12 @@ static char	*append_char(char *res, char c)
 static char	*handle_dollar(char *res, char *line, int *i, char **envp,
 		int last_exit)
 {
-	/* $?: expansion du code de retour */
-	if (line[*i + 1] == '?')
+	if (line[*i + 1] == '?') /* $?: expansion du code de retour */
 		return (expand_exit_status(res, i, last_exit));
-	/* $NAME: expansion d'une variable d'environnement */
 	if (line[*i + 1] && (ft_isalnum((unsigned char)line[*i + 1]) || line[*i
-			+ 1] == '_'))
+				+ 1] == '_')) /* $NAME: expansion d'une variable d'environnement */
 		return (expand_env_var(res, line, i, envp));
-	/* '$' suivi d'un caractère non valide → conserver '$' littéral */
-	res = strjoin_char_free(res, '$');
+	res = strjoin_char_free(res, '$'); /* '$' suivi d'un caractère non valide → conserver '$' littéral */
 	(*i)++;
 	return (res);
 }
@@ -97,7 +104,6 @@ char	*expand_variables(char *line, char **envp, int last_exit)
 	char	*res;
 	int		i;
 
-	/* résultat initial vide */
 	res = malloc(1);
 	if (!res)
 		return (NULL);
@@ -105,13 +111,11 @@ char	*expand_variables(char *line, char **envp, int last_exit)
 	i = 0;
 	while (line[i])
 	{
-		/* lorsqu'on rencontre '$', traitement spécial */
 		if (line[i] == '$')
 		{
 			res = handle_dollar(res, line, &i, envp, last_exit);
 			continue ;
 		}
-		/* sinon, copier le caractère dans le résultat */
 		res = append_char(res, line[i]);
 		i++;
 	}

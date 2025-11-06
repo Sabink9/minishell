@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sab <sab@student.42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/11/06 20:00:23 by sab               #+#    #+#             */
+/*   Updated: 2025/11/06 20:00:24 by sab              ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../libft/libft.h"
 #include "mini.h"
 
@@ -55,11 +67,8 @@ char	**handle_command(char **envp, char **split, int *exit_status)
 	else if (!ft_strcmp(argv[0], "export"))
 	{
 		new_env = ft_export(envp, argv, exit_status);
-		if (new_env && new_env != envp)
-		{
-			free_split(envp);
+		if (new_env && new_env != envp) 
 			envp = new_env;
-		}
 	}
 	else if (!ft_strcmp(argv[0], "cd"))
 	{
@@ -80,10 +89,7 @@ char	**handle_command(char **envp, char **split, int *exit_status)
 		new_env = NULL;
 		*exit_status = ft_unset(argv, &new_env);
 		if (new_env)
-		{
-			free_split(envp);
 			envp = new_env;
-		}
 	}
 	else
 		*exit_status = exec_command(argv, envp);

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_unset.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sab <sab@student.42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/11/06 20:00:18 by sab               #+#    #+#             */
+/*   Updated: 2025/11/06 20:05:54 by sab              ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../libft/libft.h"
 #include "mini.h"
 #include <unistd.h> /* write */
@@ -34,7 +46,6 @@ static int	entry_matches_key(const char *entry, const char *key)
 		return (0);
 	while (key[i] && entry[i] && entry[i] == key[i])
 		i++;
-	/* match si key fini ET entry a '=' juste après */
 	return (key[i] == '\0' && entry[i] == '=');
 }
 

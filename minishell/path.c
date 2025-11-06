@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   path.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sab <sab@student.42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/11/06 20:00:29 by sab               #+#    #+#             */
+/*   Updated: 2025/11/06 20:08:23 by sab              ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../libft/libft.h"
 #include "mini.h"
 
@@ -77,16 +89,13 @@ char	*find_executable(char *cmd, char **envp)
 {
 	char	*path_env;
 
-	/* Si le nom contient '/', on laisse exec_command gérer les accès/erreurs */
 	if (ft_strchr(cmd, '/'))
 		return (ft_strdup(cmd));
-	/* Sinon: chercher dans PATH */
 	path_env = get_path_from_env(envp);
 	if (!path_env)
 		return (NULL);
-	return (search_in_path(path_env, cmd)); /* NULL si introuvable */
+	return (search_in_path(path_env, cmd));
 }
-
 
 /* ---------- exec_command.c ---------- */
 int	exec_command(char **args, char **envp)
@@ -98,25 +107,22 @@ int	exec_command(char **args, char **envp)
 	int		sig;
 
 	need_free = 0;
-	/* Cas 1: chemin avec '/' -> traiter comme pathname direct */
 	if (ft_strchr(args[0], '/'))
 	{
-		/* Noter: ici path n'est pas alloué, on utilise args[0] directement */
 		if (access(args[0], F_OK) != 0)
 		{
 			perror(args[0]);
 			return (127);
-		} /* n'existe pas */
+		}
 		if (access(args[0], X_OK) != 0)
 		{
 			perror(args[0]);
 			return (126);
-		} /* pas exécutable */
+		}
 		path = args[0];
 	}
 	else
 	{
-		/* Cas 2: recherche dans PATH */
 		path = find_executable(args[0], envp);
 		if (!path)
 		{
@@ -126,16 +132,13 @@ int	exec_command(char **args, char **envp)
 			return (127);
 		}
 		need_free = 1;
-			/* path vient de malloc (ft_strdup dans search_in_path) */
 	}
-	/* Parent: ignorer Ctrl-C / Ctrl-\ pendant l'exécution */
 	signal(SIGINT, SIG_IGN);
 	signal(SIGQUIT, SIG_IGN);
 	pid = fork();
 	if (pid == -1)
 	{
 		perror("fork");
-		/* Revenir en mode interactif quoi qu'il arrive */
 		setup_interactive_signals();
 		if (need_free)
 			free(path);
@@ -143,24 +146,20 @@ int	exec_command(char **args, char **envp)
 	}
 	if (pid == 0)
 	{
-		/* Enfant: comportements par défaut des signaux */
 		setup_child_signals();
 		execve(path, args, envp);
-		/* Ici: trouvé mais impossible à exécuter (ex: format invalide ENOEXEC) */
 		perror(args[0]);
 		_exit(126);
 	}
-	/* Parent */
 	if (need_free)
 		free(path);
 	waitpid(pid, &status, 0);
-	/* Rétablir le mode readline (SIGINT/SIGQUIT custom) */
 	if (WIFSIGNALED(status))
 	{
 		sig = WTERMSIG(status);
-		if (sig == SIGINT)       /* Ctrl-C */
-			write(1, "\n", 1);   /* évite "^C$>" collé */
-		else if (sig == SIGQUIT) /* Ctrl-\ */
+		if (sig == SIGINT)
+			write(1, "\n", 1);
+		else if (sig == SIGQUIT)
 			write(2, "Quit: 3\n", 8);
 	}
 	setup_interactive_signals();
