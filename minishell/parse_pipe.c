@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse_pipe.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sab <sab@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/06 20:00:26 by sab               #+#    #+#             */
-/*   Updated: 2025/11/06 20:00:27 by sab              ###   ########.fr       */
+/*   Updated: 2025/11/10 18:42:07 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,19 +77,22 @@ char	***parse_pipes(char **split, int *n)
 	return (cmdv);
 }
 
-void	free_cmdv(char ***cmdv)
+int	finalize_status(int status_last)
 {
-	int	i;
-	int	j;
+	int	sig;
 
-	i = 0;
-	while (cmdv && cmdv[i])
+	if (WIFSIGNALED(status_last))
 	{
-		j = 0;
-		while (cmdv[i][j])
-			free(cmdv[i][j++]);
-		free(cmdv[i]);
-		i++;
+		sig = WTERMSIG(status_last);
+		if (sig == SIGINT)
+			write(1, "\n", 1);
+		else if (sig == SIGQUIT)
+			write(2, "Quit: 3\n", 8);
+		else if (sig == SIGPIPE)
+			perror("Broken pipe");
+		return (128 + sig);
 	}
-	free(cmdv);
+	if (WIFEXITED(status_last))
+		return (WEXITSTATUS(status_last));
+	return (1);
 }

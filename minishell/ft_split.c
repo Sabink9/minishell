@@ -3,21 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   ft_split.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sab <sab@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/06 20:00:16 by sab               #+#    #+#             */
-/*   Updated: 2025/11/06 20:00:17 by sab              ###   ########.fr       */
+/*   Updated: 2025/11/10 14:40:11 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../libft/libft.h"
 #include "mini.h"
-
-/* saute espaces/tabs */
-// static int	is_space(int c)
-// {
-// 	return (c == ' ' || c == '\t');
-// }
 
 /* duplique brut le segment [start, end) SANS enlever les quotes */
 static char	*dup_raw(const char *s, int start, int end)
@@ -37,109 +31,80 @@ static char	*dup_raw(const char *s, int start, int end)
 	return (out);
 }
 
-/* Split: ignore espaces hors-quotes, conserve les quotes dans les tokens */
-/* Split: ignore espaces hors-quotes, conserve les quotes dans les tokens */
-static void	free_partial(char **tab, int count)
+/* lit un token (mot avec quotes, ou '|' ) et l'ajoute dans tab */
+static int	push_tok(char **tab, int *count, char *tok)
 {
-	int	k;
+	if (!tok)
+		return (0);
+	tab[*count] = tok;
+	(*count)++;
+	return (1);
+}
 
-	k = 0;
-	while (k < count)
+static int	scan_tok(const char *s, int i, int *q)
+{
+	while (s[i])
 	{
-		free(tab[k]);
-		k++;
+		if (*q == 0 && (s[i] == ' ' || s[i] == '\t' || s[i] == '|'))
+			break ;
+		if (s[i] == '\'' || s[i] == '\"')
+		{
+			if (*q == 0)
+				*q = s[i];
+			else if (*q == s[i])
+				*q = 0;
+		}
+		i++;
 	}
-	free(tab);
+	return (i);
+}
+
+static int	next_token(char *s, int *i, char **tab, int *count)
+{
+	int	start;
+	int	q;
+
+	while (s[*i] && (s[*i] == ' ' || s[*i] == '\t'))
+		(*i)++;
+	if (!s[*i])
+		return (0);
+	if (s[*i] == '|')
+	{
+		if (!push_tok(tab, count, dup_raw(s, *i, *i + 1)))
+			return (-1);
+		(*i)++;
+		return (1);
+	}
+	start = *i;
+	q = 0;
+	*i = scan_tok(s, *i, &q);
+	if (!push_tok(tab, count, dup_raw(s, start, *i)))
+		return (-1);
+	return (1);
 }
 
 char	**ft_split(char *s)
 {
 	int		i;
-	int		start;
-	int		q;
+	int		r;
 	int		count;
-	int		cap;
 	char	**tab;
-	char	c;
 
 	if (!s)
 		return (NULL);
-	cap = (int)ft_strlen(s) / 2 + 2;
-	tab = (char **)malloc(sizeof(char *) * cap);
+	tab = (char **)malloc(sizeof(char *) * ((int)ft_strlen(s) / 2 + 2));
 	if (!tab)
 		return (NULL);
 	i = 0;
 	count = 0;
-	while (s[i])
+	while (1)
 	{
-		while (s[i] && (s[i] == ' ' || s[i] == '\t'))
-			i++;
-		if (!s[i])
+		r = next_token(s, &i, tab, &count);
+		if (r == -1)
+			return (free_partial(tab, count), NULL);
+		if (r == 0)
 			break ;
-		start = i;
-		q = 0;
-		while (s[i])
-		{
-			c = s[i];
-			if (c == '\'' || c == '\"')
-			{
-				if (q == 0)
-					q = c;
-				else if (q == c)
-					q = 0;
-				i++;
-				continue ;
-			}
-			if (q == 0 && c == '|')
-			{
-				if (i > start)
-				{
-					tab[count] = dup_raw(s, start, i);
-					if (!tab[count])
-					{
-						free_partial(tab, count);
-						return (NULL);
-					}
-					count++;
-				}
-				tab[count] = dup_raw(s, i, i + 1); /* "|" */
-				if (!tab[count])
-				{
-					free_partial(tab, count);
-					return (NULL);
-				}
-				count++;
-				i++;
-				start = i;
-				break ;
-			}
-			if (q == 0 && (c == ' ' || c == '\t'))
-				break ;
-			i++;
-		}
-		if (start < i)
-		{
-			tab[count] = dup_raw(s, start, i);
-			if (!tab[count])
-			{
-				free_partial(tab, count);
-				return (NULL);
-			}
-			count++;
-		}
 	}
 	tab[count] = NULL;
 	return (tab);
-}
-
-void	free_split(char **tab)
-{
-	int	i;
-
-	i = 0;
-	if (!tab)
-		return ;
-	while (tab[i])
-		free(tab[i++]);
-	free(tab);
 }

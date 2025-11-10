@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sab <sab@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/06 20:00:49 by sab               #+#    #+#             */
-/*   Updated: 2025/11/06 20:00:50 by sab              ###   ########.fr       */
+/*   Updated: 2025/11/10 12:57:56 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,6 @@ char	*strjoin_char_free(char *s, char c)
 	free(s);
 	return (res);
 }
-
 
 /* concatène deux chaînes et free la première */
 char	*strjoin_free(char *s1, char *s2)
@@ -101,6 +100,7 @@ int	ft_strcmp(char *s1, char *s2)
 		i++;
 	return (s1[i] - s2[i]);
 }
+
 void	skip_args(char **args, int *i)
 {
 	args[*i] = NULL;

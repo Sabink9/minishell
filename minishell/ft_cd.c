@@ -3,31 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   ft_cd.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sab <sab@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/06 20:00:01 by sab               #+#    #+#             */
-/*   Updated: 2025/11/06 20:00:02 by sab              ###   ########.fr       */
+/*   Updated: 2025/11/10 12:40:35 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../libft/libft.h"
 #include "mini.h"
-
-static char	*get_env_value(char **envp, const char *key)
-{
-	int		i;
-	size_t	len;
-
-	len = ft_strlen(key);
-	i = 0;
-	while (envp[i])
-	{
-		if (ft_strncmp(envp[i], key, len) == 0 && envp[i][len] == '=')
-			return (envp[i] + len + 1);
-		i++;
-	}
-	return (NULL);
-}
 
 static void	set_env_value(char **envp, const char *key, const char *value)
 {
@@ -60,7 +44,7 @@ static int	change_directory(char **args, char **envp, char *oldpwd,
 	char	*target;
 
 	if (!args[1])
-		target = get_env_value(envp, "HOME");
+		target = get_env_value("HOME", envp);
 	else
 		target = args[1];
 	if (!target)

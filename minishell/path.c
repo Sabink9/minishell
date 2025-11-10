@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   path.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sab <sab@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/06 20:00:29 by sab               #+#    #+#             */
-/*   Updated: 2025/11/06 20:08:23 by sab              ###   ########.fr       */
+/*   Updated: 2025/11/10 14:58:48 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../libft/libft.h"
 #include "mini.h"
 
-char	*get_path_from_env(char **envp)
+static char	*get_path_from_env(char **envp)
 {
 	int	i;
 
@@ -97,75 +97,8 @@ char	*find_executable(char *cmd, char **envp)
 	return (search_in_path(path_env, cmd));
 }
 
-/* ---------- exec_command.c ---------- */
-int	exec_command(char **args, char **envp)
+void	parent_ignore_signals(void)
 {
-	pid_t	pid;
-	int		status;
-	char	*path;
-	int		need_free;
-	int		sig;
-
-	need_free = 0;
-	if (ft_strchr(args[0], '/'))
-	{
-		if (access(args[0], F_OK) != 0)
-		{
-			perror(args[0]);
-			return (127);
-		}
-		if (access(args[0], X_OK) != 0)
-		{
-			perror(args[0]);
-			return (126);
-		}
-		path = args[0];
-	}
-	else
-	{
-		path = find_executable(args[0], envp);
-		if (!path)
-		{
-			write(2, "minishell: command not found: ", 30);
-			write(2, args[0], ft_strlen(args[0]));
-			write(2, "\n", 1);
-			return (127);
-		}
-		need_free = 1;
-	}
 	signal(SIGINT, SIG_IGN);
 	signal(SIGQUIT, SIG_IGN);
-	pid = fork();
-	if (pid == -1)
-	{
-		perror("fork");
-		setup_interactive_signals();
-		if (need_free)
-			free(path);
-		return (1);
-	}
-	if (pid == 0)
-	{
-		setup_child_signals();
-		execve(path, args, envp);
-		perror(args[0]);
-		_exit(126);
-	}
-	if (need_free)
-		free(path);
-	waitpid(pid, &status, 0);
-	if (WIFSIGNALED(status))
-	{
-		sig = WTERMSIG(status);
-		if (sig == SIGINT)
-			write(1, "\n", 1);
-		else if (sig == SIGQUIT)
-			write(2, "Quit: 3\n", 8);
-	}
-	setup_interactive_signals();
-	if (WIFEXITED(status))
-		return (WEXITSTATUS(status));
-	if (WIFSIGNALED(status))
-		return (128 + WTERMSIG(status));
-	return (1);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils2.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sab <sab@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/06 20:00:52 by sab               #+#    #+#             */
-/*   Updated: 2025/11/06 20:47:03 by sab              ###   ########.fr       */
+/*   Updated: 2025/11/10 18:07:49 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ long	ft_atol(const char *str)
 	}
 	return (res * sign);
 }
+
 void	print_args(char **argv, int i)
 {
 	int	first;
@@ -59,4 +60,33 @@ void	print_args(char **argv, int i)
 		first = 0;
 		i++;
 	}
+}
+
+int	is_valid_identifier(const char *s)
+{
+	int	i;
+
+	i = 0;
+	if (!s || !((s[0] >= 'A' && s[0] <= 'Z') || (s[0] >= 'a' && s[0] <= 'z')
+			|| s[0] == '_'))
+		return (0);
+	i = 1;
+	while (s[i] && s[i] != '=')
+	{
+		if (!((s[i] >= 'A' && s[i] <= 'Z') || (s[i] >= 'a' && s[i] <= 'z')
+				|| (s[i] >= '0' && s[i] <= '9') || s[i] == '_'))
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
+/* Restaure les stdin/stdout d’origine après exécution */
+int	restore_std_fds(int saved_in, int saved_out)
+{
+	dup2(saved_in, STDIN_FILENO);
+	dup2(saved_out, STDOUT_FILENO);
+	close(saved_in);
+	close(saved_out);
+	return (0);
 }

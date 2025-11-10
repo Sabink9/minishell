@@ -3,34 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   export_utils2.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sab <sab@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/06 19:59:58 by sab               #+#    #+#             */
-/*   Updated: 2025/11/06 19:59:59 by sab              ###   ########.fr       */
+/*   Updated: 2025/11/10 12:42:46 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../libft/libft.h"
 #include "mini.h"
-
-static int	is_valid_identifier(const char *s)
-{
-	int	i;
-
-	i = 0;
-	if (!s || !((s[0] >= 'A' && s[0] <= 'Z') || (s[0] >= 'a' && s[0] <= 'z')
-			|| s[0] == '_'))
-		return (0);
-	i = 1;
-	while (s[i] && s[i] != '=')
-	{
-		if (!((s[i] >= 'A' && s[i] <= 'Z') || (s[i] >= 'a' && s[i] <= 'z')
-				|| (s[i] >= '0' && s[i] <= '9') || s[i] == '_'))
-			return (0);
-		i++;
-	}
-	return (1);
-}
 
 char	**append_env_var(char **envp, char *new_var, int size)
 {
@@ -72,20 +53,6 @@ char	**set_env_var(char **envp, const char *key, const char *value)
 		return (envp);
 	}
 	return (append_env_var(envp, new_var, size));
-}
-
-void	split_key_value(const char *str, char **key, char **value)
-{
-	int	i;
-
-	i = 0;
-	while (str[i] && str[i] != '=')
-		i++;
-	*key = ft_strndup(str, i);
-	if (str[i] == '=')
-		*value = ft_strdup(str + i + 1);
-	else
-		*value = NULL;
 }
 
 static int	handle_export_arg(char ***envp, char *arg)

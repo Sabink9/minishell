@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export_utils1.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sab <sab@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/06 19:59:55 by sab               #+#    #+#             */
-/*   Updated: 2025/11/06 19:59:56 by sab              ###   ########.fr       */
+/*   Updated: 2025/11/10 12:42:55 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,20 @@ void	print_export(char **envp)
 		printf("declare -x %s\n", envp[i]);
 		i++;
 	}
+}
+
+void	split_key_value(const char *str, char **key, char **value)
+{
+	int	i;
+
+	i = 0;
+	while (str[i] && str[i] != '=')
+		i++;
+	*key = ft_strndup(str, i);
+	if (str[i] == '=')
+		*value = ft_strdup(str + i + 1);
+	else
+		*value = NULL;
 }
 
 char	*make_env_var(const char *key, const char *value)

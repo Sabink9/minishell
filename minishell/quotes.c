@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   quotes.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sab <sab@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/06 20:00:33 by sab               #+#    #+#             */
-/*   Updated: 2025/11/06 20:17:49 by sab              ###   ########.fr       */
+/*   Updated: 2025/11/10 12:58:27 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include "mini.h"
 
 /* pré-traite la ligne : supprime les quotes et marque les zones protégées */
-static void update_quote_and_append(char **res, char c, char *q)
+static void	update_quote_and_append(char **res, char c, char *q)
 {
 	if (*q == 0)
 		*q = c;
@@ -23,11 +23,11 @@ static void update_quote_and_append(char **res, char c, char *q)
 	*res = strjoin_char_free(*res, c);
 }
 
-char *process_quotes(char *line)
+char	*process_quotes(char *line)
 {
-	char *res;
-	int i;
-	char q;
+	char	*res;
+	int		i;
+	char	q;
 
 	res = malloc(1);
 	if (!res)
@@ -41,7 +41,7 @@ char *process_quotes(char *line)
 		{
 			update_quote_and_append(&res, line[i], &q);
 			i++;
-			continue;
+			continue ;
 		}
 		if (q == '\'' && line[i] == '$')
 			res = strjoin_char_free(res, (char)-1);

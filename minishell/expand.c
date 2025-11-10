@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expand.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sab <sab@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/06 19:59:50 by sab               #+#    #+#             */
-/*   Updated: 2025/11/06 21:07:36 by sab              ###   ########.fr       */
+/*   Updated: 2025/11/10 12:40:13 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,26 +14,24 @@
 #include "mini.h"
 
 /* récupère la valeur d’une variable env */
-static char	*get_env_value(char *name, char **envp)
+char	*get_env_value(const char *key, char **envp)
 {
-	int	i;
-	int	len;
+	int		i;
+	size_t	len;
 
-	len = 0;
-	while (name[len])
-		len++;
+	len = ft_strlen(key);
 	i = 0;
-	while (envp && envp[i])
+	while (envp[i])
 	{
-		if (!ft_strncmp(envp[i], name, len) && envp[i][len] == '=')
+		if (ft_strncmp(envp[i], key, len) == 0 && envp[i][len] == '=')
 			return (envp[i] + len + 1);
 		i++;
 	}
-	return ("");
+	return (NULL);
 }
 
 /* expansion principale */
-static char	*expand_exit_status(char *res, int *i, int last_exit)
+char	*expand_exit_status(char *res, int *i, int last_exit)
 {
 	char	buf[12];
 	int		n;
@@ -54,7 +52,7 @@ static char	*expand_exit_status(char *res, int *i, int last_exit)
 	return (res);
 }
 
-static char	*expand_env_var(char *res, char *line, int *i, char **envp)
+char	*expand_env_var(char *res, char *line, int *i, char **envp)
 {
 	char	name[256];
 	int		j;
@@ -77,47 +75,9 @@ static char	*expand_env_var(char *res, char *line, int *i, char **envp)
 	return (res);
 }
 
-static char	*append_char(char *res, char c)
+char	*append_char(char *res, char c)
 {
 	if (c == -1)
 		return (strjoin_char_free(res, '$'));
 	return (strjoin_char_free(res, c));
-}
-
-/* Gère l'expansion après un '$' dans la ligne */
-static char	*handle_dollar(char *res, char *line, int *i, char **envp,
-		int last_exit)
-{
-	if (line[*i + 1] == '?') /* $?: expansion du code de retour */
-		return (expand_exit_status(res, i, last_exit));
-	if (line[*i + 1] && (ft_isalnum((unsigned char)line[*i + 1]) || line[*i
-				+ 1] == '_')) /* $NAME: expansion d'une variable d'environnement */
-		return (expand_env_var(res, line, i, envp));
-	res = strjoin_char_free(res, '$'); /* '$' suivi d'un caractère non valide → conserver '$' littéral */
-	(*i)++;
-	return (res);
-}
-
-/* Parcourt la ligne et remplace les variables $VAR et $? */
-char	*expand_variables(char *line, char **envp, int last_exit)
-{
-	char	*res;
-	int		i;
-
-	res = malloc(1);
-	if (!res)
-		return (NULL);
-	res[0] = '\0';
-	i = 0;
-	while (line[i])
-	{
-		if (line[i] == '$')
-		{
-			res = handle_dollar(res, line, &i, envp, last_exit);
-			continue ;
-		}
-		res = append_char(res, line[i]);
-		i++;
-	}
-	return (res);
 }
