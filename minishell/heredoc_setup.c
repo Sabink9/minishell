@@ -6,7 +6,7 @@
 /*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 17:57:06 by saciurus          #+#    #+#             */
-/*   Updated: 2025/11/10 18:06:23 by saciurus         ###   ########.fr       */
+/*   Updated: 2025/11/11 11:46:49 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,12 @@ void	remove_n_tokens(char **args, int pos, int n)
 {
 	int	j;
 
+	j = 0;
+	while (j < n && args[pos + j])
+	{
+		free(args[pos + j]);
+		j++;
+	}
 	j = pos;
 	while (args[j + n])
 	{

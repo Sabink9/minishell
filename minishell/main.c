@@ -6,7 +6,7 @@
 /*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/06 20:00:23 by sab               #+#    #+#             */
-/*   Updated: 2025/11/10 18:48:46 by saciurus         ###   ########.fr       */
+/*   Updated: 2025/11/11 11:26:56 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,10 +80,14 @@ int	main(int argc, char **argv, char **envp_sys)
 		if (!line)
 		{
 			printf("exit\n");
+			free(line);
 			break ;
 		}
 		if (handle_empty_or_signal(line, &exit_status))
+		{
+			free(line);
 			continue ;
+		}
 		envp = process_line(line, envp, &exit_status);
 	}
 	rl_clear_history();

@@ -6,16 +6,29 @@
 /*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 12:44:09 by saciurus          #+#    #+#             */
-/*   Updated: 2025/11/10 14:35:22 by saciurus         ###   ########.fr       */
+/*   Updated: 2025/11/11 13:54:52 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../libft/libft.h"
 #include "mini.h"
 
-/* --- builtin ------------------------------------------------------------ */
-/* usage:  int st = ft_unset(argv, &envp);  (st=0 ok,
-		st=1 si identifiant invalide) */
+static int	unset_one(char *arg, char ***penvp)
+{
+	char	**new_env;
+
+	if (!is_valid_identifier(arg))
+	{
+		print_unset_error(arg);
+		return (1);
+	}
+	new_env = env_remove_key(*penvp, arg);
+	if (!new_env)
+		return (1);
+	*penvp = new_env;
+	return (0);
+}
+
 int	ft_unset(char **args, char ***penvp)
 {
 	int	i;
@@ -27,13 +40,8 @@ int	ft_unset(char **args, char ***penvp)
 	i = 1;
 	while (args[i])
 	{
-		if (!is_valid_identifier(args[i]))
-		{
-			print_unset_error(args[i]);
+		if (unset_one(args[i], penvp))
 			status = 1;
-		}
-		else
-			*penvp = env_remove_key(*penvp, args[i]);
 		i++;
 	}
 	return (status);

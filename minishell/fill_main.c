@@ -6,7 +6,7 @@
 /*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 18:45:34 by saciurus          #+#    #+#             */
-/*   Updated: 2025/11/10 18:49:00 by saciurus         ###   ########.fr       */
+/*   Updated: 2025/11/11 11:26:29 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,14 +35,10 @@ int	handle_empty_or_signal(char *line, int *exit_status)
 	{
 		*exit_status = 130;
 		g_sig = 0;
-		free(line);
 		return (1);
 	}
 	if (*line == '\0')
-	{
-		free(line);
 		return (1);
-	}
 	return (0);
 }
 
@@ -50,10 +46,15 @@ int	handle_empty_or_signal(char *line, int *exit_status)
 char	**process_line(char *line, char **envp, int *exit_status)
 {
 	char	**split;
+	char	*tmp;
 
 	add_history(line);
-	line = process_quotes(line);
-	line = expand_variables(line, envp, *exit_status);
+	tmp = process_quotes(line);
+	free(line);
+	line = tmp;
+	tmp = expand_variables(line, envp, *exit_status);
+	free(line);
+	line = tmp;
 	split = ft_split(line);
 	if (split && split[0])
 		envp = handle_command(envp, split, exit_status);

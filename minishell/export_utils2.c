@@ -6,7 +6,7 @@
 /*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/06 19:59:58 by sab               #+#    #+#             */
-/*   Updated: 2025/11/10 12:42:46 by saciurus         ###   ########.fr       */
+/*   Updated: 2025/11/11 10:46:43 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ char	**append_env_var(char **envp, char *new_var, int size)
 	}
 	new_envp[i++] = new_var;
 	new_envp[i] = NULL;
+	free(envp);
 	return (new_envp);
 }
 

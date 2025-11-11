@@ -6,7 +6,7 @@
 /*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/06 20:00:18 by sab               #+#    #+#             */
-/*   Updated: 2025/11/10 12:53:36 by saciurus         ###   ########.fr       */
+/*   Updated: 2025/11/11 10:39:45 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,10 @@ char	**env_remove_key(char **envp, const char *key)
 	keep = count_kept_entries(envp, key);
 	out = malloc(sizeof(char *) * (keep + 1));
 	if (!out)
+	{
+		free_split(envp);
 		return (NULL);
+	}
 	copy_kept_entries(out, envp, key);
 	free_split(envp);
 	return (out);
