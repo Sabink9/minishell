@@ -6,7 +6,7 @@
 /*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 12:44:09 by saciurus          #+#    #+#             */
-/*   Updated: 2025/11/11 13:54:52 by saciurus         ###   ########.fr       */
+/*   Updated: 2025/11/11 15:27:47 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,17 +15,14 @@
 
 static int	unset_one(char *arg, char ***penvp)
 {
-	char	**new_env;
-
 	if (!is_valid_identifier(arg))
 	{
 		print_unset_error(arg);
 		return (1);
 	}
-	new_env = env_remove_key(*penvp, arg);
-	if (!new_env)
+	*penvp = env_remove_key(*penvp, arg);
+	if (!*penvp)
 		return (1);
-	*penvp = new_env;
 	return (0);
 }
 
@@ -34,7 +31,7 @@ int	ft_unset(char **args, char ***penvp)
 	int	i;
 	int	status;
 
-	if (!args || !args[0] || !penvp || !*penvp)
+	if (!args || !args[1] || !penvp || !*penvp)
 		return (0);
 	status = 0;
 	i = 1;

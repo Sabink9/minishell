@@ -6,7 +6,7 @@
 /*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 18:33:27 by saciurus          #+#    #+#             */
-/*   Updated: 2025/11/10 18:41:55 by saciurus         ###   ########.fr       */
+/*   Updated: 2025/11/11 15:00:37 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,11 +56,7 @@ static char	**handle_env_builtins(char **argv, char **envp, int *exit_status)
 	else if (!ft_strcmp(argv[0], "cd"))
 		handle_cd_builtin(argv, envp, exit_status);
 	else if (!ft_strcmp(argv[0], "unset"))
-	{
-		*exit_status = ft_unset(argv, &tmp);
-		if (tmp)
-			envp = tmp;
-	}
+		*exit_status = ft_unset(argv, &envp);
 	else
 		*exit_status = exec_command(argv, envp);
 	return (envp);
@@ -85,7 +81,12 @@ char	**handle_pipes(char **split, char **envp, int *exit_status)
 
 	cmdv = parse_pipes(split, &cmd_count);
 	if (!cmdv)
+	{
+		write(2, "minishell: syntax error near unexpected token `|'\n", 51);
+		*exit_status = 2;
+		g_sig = 0;
 		return (envp);
+	}
 	*exit_status = exec_piped_commands(cmdv, cmd_count, envp, *exit_status);
 	free_cmdv(cmdv);
 	return (envp);

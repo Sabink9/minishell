@@ -6,7 +6,7 @@
 /*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/06 20:00:23 by sab               #+#    #+#             */
-/*   Updated: 2025/11/11 11:26:56 by saciurus         ###   ########.fr       */
+/*   Updated: 2025/11/11 14:47:57 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,9 +64,36 @@ char	**handle_command(char **envp, char **split, int *exit_status)
 }
 
 /* fonction principale du shell */
-int	main(int argc, char **argv, char **envp_sys)
+static void	run_shell_loop(char ***envp, int *exit_status)
 {
 	char	*line;
+
+	while (1)
+	{
+		line = read_full_line();
+		if (!line)
+		{
+			if (g_sig == 2)
+			{
+				*exit_status = 2;
+				g_sig = 0;
+				continue ;
+			}
+			printf("exit\n");
+			free(line);
+			break ;
+		}
+		if (handle_empty_or_signal(line, exit_status))
+		{
+			free(line);
+			continue ;
+		}
+		*envp = process_line(line, *envp, exit_status);
+	}
+}
+
+int	main(int argc, char **argv, char **envp_sys)
+{
 	char	**envp;
 	int		exit_status;
 
@@ -74,22 +101,7 @@ int	main(int argc, char **argv, char **envp_sys)
 	(void)argv;
 	envp = init_env(envp_sys);
 	exit_status = 0;
-	while (1)
-	{
-		line = read_full_line();
-		if (!line)
-		{
-			printf("exit\n");
-			free(line);
-			break ;
-		}
-		if (handle_empty_or_signal(line, &exit_status))
-		{
-			free(line);
-			continue ;
-		}
-		envp = process_line(line, envp, &exit_status);
-	}
+	run_shell_loop(&envp, &exit_status);
 	rl_clear_history();
 	free_split(envp);
 	return (exit_status);

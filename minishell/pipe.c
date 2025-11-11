@@ -6,27 +6,12 @@
 /*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/06 20:00:31 by sab               #+#    #+#             */
-/*   Updated: 2025/11/10 16:53:36 by saciurus         ###   ########.fr       */
+/*   Updated: 2025/11/11 15:42:30 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../libft/libft.h"
 #include "mini.h"
-
-void	child_setup_io(int in_fd, int *pipefd, int is_last)
-{
-	if (!is_last)
-	{
-		dup2(pipefd[1], STDOUT_FILENO);
-		close(pipefd[1]);
-		close(pipefd[0]);
-	}
-	if (in_fd != STDIN_FILENO)
-	{
-		dup2(in_fd, STDIN_FILENO);
-		close(in_fd);
-	}
-}
 
 static char	**prepare_argv(char **cmd, char **envp, int last_status)
 {
@@ -46,7 +31,37 @@ static char	**prepare_argv(char **cmd, char **envp, int last_status)
 	return (argv2);
 }
 
-static int	builtin_dispatch(char **argv2, char **envp)
+/* export + unset */
+static int	dispatch_env_builtins(char **argv2, char **envp)
+{
+	int		code;
+	char	**tmp;
+	char	**new_env;
+
+	tmp = ft_env_dup(envp);
+	if (!tmp)
+		return (1);
+	if (!ft_strcmp(argv2[0], "export"))
+	{
+		new_env = ft_export(tmp, argv2, &code);
+		if (new_env && new_env != tmp)
+			free_split(new_env);
+		else
+			free_split(tmp);
+		return (code);
+	}
+	if (!ft_strcmp(argv2[0], "unset"))
+	{
+		code = ft_unset(argv2, &tmp);
+		free_split(tmp);
+		return (code);
+	}
+	free_split(tmp);
+	return (-1);
+}
+
+/* dispatcher principal */
+int	builtin_dispatch(char **argv2, char **envp)
 {
 	int	code;
 
@@ -62,15 +77,7 @@ static int	builtin_dispatch(char **argv2, char **envp)
 		return (ft_pwd());
 	if (!ft_strcmp(argv2[0], "env"))
 		return (ft_env(argv2, envp));
-	if (!ft_strcmp(argv2[0], "export"))
-	{
-		code = 0;
-		(void)ft_export(envp, argv2, &code);
-		return (code);
-	}
-	if (!ft_strcmp(argv2[0], "unset"))
-		return (ft_unset(argv2, &envp));
-	return (-1);
+	return (dispatch_env_builtins(argv2, envp));
 }
 
 static void	exec_external(char **argv2, char **envp)

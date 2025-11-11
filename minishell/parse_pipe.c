@@ -6,27 +6,32 @@
 /*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/06 20:00:26 by sab               #+#    #+#             */
-/*   Updated: 2025/11/10 18:42:07 by saciurus         ###   ########.fr       */
+/*   Updated: 2025/11/11 15:44:24 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "mini.h"
 #include "../libft/libft.h"
+#include "mini.h"
 
-static int	count_pipes(char **split)
+static int	check_pipe_syntax(char **split)
 {
 	int	i;
-	int	count;
 
+	if (!split || !split[0])
+		return (0);
+	if (ft_strcmp(split[0], "|") == 0)
+		return (1);
 	i = 0;
-	count = 1;
 	while (split[i])
 	{
 		if (ft_strcmp(split[i], "|") == 0)
-			count++;
+		{
+			if (!split[i + 1] || ft_strcmp(split[i + 1], "|") == 0)
+				return (1);
+		}
 		i++;
 	}
-	return (count);
+	return (0);
 }
 
 static char	**copy_pipe_segment(char **split, int start, int end)
@@ -50,6 +55,25 @@ static char	**copy_pipe_segment(char **split, int start, int end)
 	return (cmd);
 }
 
+static char	***init_pipe_array(char **split, int *n)
+{
+	char	***cmdv;
+
+	if (check_pipe_syntax(split))
+	{
+		write(2, "minishell: syntax error near unexpected token `|'\n", 51);
+		g_sig = 2;
+		*n = 0;
+		return (NULL);
+	}
+	*n = count_pipes(split);
+	cmdv = malloc(sizeof(char **) * (*n + 1));
+	if (!cmdv)
+		return (NULL);
+	return (cmdv);
+}
+
+/* découpe les segments de commandes séparés par | */
 char	***parse_pipes(char **split, int *n)
 {
 	int		i;
@@ -57,8 +81,7 @@ char	***parse_pipes(char **split, int *n)
 	int		start;
 	char	***cmdv;
 
-	*n = count_pipes(split);
-	cmdv = malloc(sizeof(char **) * (*n + 1));
+	cmdv = init_pipe_array(split, n);
 	if (!cmdv)
 		return (NULL);
 	i = 0;

@@ -8,6 +8,7 @@ SRCS =	expand.c \
 	export_utils2.c \
 	free.c \
 	ft_cd.c \
+	ft_echo.c \
 	ft_pwd.c \
 	ft_split.c \
 	ft_unset.c \

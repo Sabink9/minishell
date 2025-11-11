@@ -6,7 +6,7 @@
 /*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/31 17:16:12 by saciurus          #+#    #+#             */
-/*   Updated: 2025/11/10 18:49:18 by saciurus         ###   ########.fr       */
+/*   Updated: 2025/11/11 15:45:11 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,4 +142,6 @@ int								handle_empty_or_signal(char *line,
 									int *exit_status);
 char							**process_line(char *line, char **envp,
 									int *exit_status);
+int								is_n_flag(char *arg);
+int								count_pipes(char **split);
 #endif

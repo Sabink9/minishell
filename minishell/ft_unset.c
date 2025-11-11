@@ -6,7 +6,7 @@
 /*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/06 20:00:18 by sab               #+#    #+#             */
-/*   Updated: 2025/11/11 10:39:45 by saciurus         ###   ########.fr       */
+/*   Updated: 2025/11/11 15:27:13 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,12 +18,14 @@ static int	entry_matches_key(const char *entry, const char *key)
 {
 	int	i;
 
-	i = 0;
 	if (!entry || !key)
 		return (0);
-	while (key[i] && entry[i] && entry[i] == key[i])
+	i = 0;
+	while (entry[i] && key[i] && entry[i] == key[i])
 		i++;
-	return (key[i] == '\0' && entry[i] == '=');
+	if (key[i] != '\0')
+		return (0);
+	return (entry[i] == '=');
 }
 
 void	print_unset_error(const char *arg)
@@ -75,6 +77,8 @@ char	**env_remove_key(char **envp, const char *key)
 	int		keep;
 	char	**out;
 
+	if (!key || !envp)
+		return (envp);
 	keep = count_kept_entries(envp, key);
 	out = malloc(sizeof(char *) * (keep + 1));
 	if (!out)
