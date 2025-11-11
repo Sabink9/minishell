@@ -6,7 +6,7 @@
 /*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/06 20:00:36 by sab               #+#    #+#             */
-/*   Updated: 2025/11/11 15:32:03 by saciurus         ###   ########.fr       */
+/*   Updated: 2025/11/11 20:14:12 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,10 +34,9 @@ static int	unclosed_quote(const char *s)
 	return (q != 0);
 }
 
-static char	*read_next_quote_line(char *line, char q)
+static char	*get_next_quote_input(char *line, char q)
 {
 	char	*tmp;
-	char	*joined;
 
 	tmp = readline("> ");
 	if (!tmp)
@@ -55,8 +54,25 @@ static char	*read_next_quote_line(char *line, char q)
 		free(line);
 		return (ft_strdup(""));
 	}
-	joined = ft_strjoin(line, tmp);
+	return (tmp);
+}
+
+/* assemble la ligne courante + "\n" + la nouvelle saisie */
+static char	*read_next_quote_line(char *line, char q)
+{
+	char	*tmp;
+	char	*with_nl;
+	char	*joined;
+
+	tmp = get_next_quote_input(line, q);
+	if (!tmp)
+		return (NULL);
+	with_nl = ft_strjoin(line, "\n");
 	free(line);
+	if (!with_nl)
+		return (free(tmp), NULL);
+	joined = ft_strjoin(with_nl, tmp);
+	free(with_nl);
 	free(tmp);
 	return (joined);
 }
@@ -87,18 +103,4 @@ char	*read_full_line(void)
 		return (NULL);
 	line = continue_line(line);
 	return (line);
-}
-
-int	has_pipe(char **split)
-{
-	int	i;
-
-	i = 0;
-	while (split[i])
-	{
-		if (ft_strcmp(split[i], "|") == 0)
-			return (1);
-		i++;
-	}
-	return (0);
 }

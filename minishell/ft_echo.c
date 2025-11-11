@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_echo.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kberraho <kberraho@student.42.fr>          +#+  +:+       +#+        */
+/*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/11 15:30:07 by saciurus          #+#    #+#             */
-/*   Updated: 2025/11/11 17:54:00 by kberraho         ###   ########.fr       */
+/*   Updated: 2025/11/11 20:15:44 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,4 +84,18 @@ int	count_pipes(char **split)
 		i++;
 	}
 	return (count);
+}
+
+int	has_pipe(char **split)
+{
+	int	i;
+
+	i = 0;
+	while (split[i])
+	{
+		if (ft_strcmp(split[i], "|") == 0)
+			return (1);
+		i++;
+	}
+	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/06 19:59:50 by sab               #+#    #+#             */
-/*   Updated: 2025/11/10 12:40:13 by saciurus         ###   ########.fr       */
+/*   Updated: 2025/11/11 20:15:33 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,26 +52,43 @@ char	*expand_exit_status(char *res, int *i, int last_exit)
 	return (res);
 }
 
-char	*expand_env_var(char *res, char *line, int *i, char **envp)
+static char	*extract_var_name(char *line, int *i)
 {
-	char	name[256];
 	int		j;
 	int		k;
-	char	*val;
+	char	*name;
+	int		line_len;
 
+	line_len = ft_strlen(line);
+	name = malloc(line_len + 1);
+	if (!name)
+		return (NULL);
 	j = *i + 1;
 	k = 0;
-	while (line[j] && ((line[j] >= 'a' && line[j] <= 'z') || (line[j] >= 'A'
-				&& line[j] <= 'Z') || (line[j] >= '0' && line[j] <= '9')
-			|| line[j] == '_'))
+	while (line[j] && (ft_isalnum((unsigned char)line[j]) || line[j] == '_'))
 	{
 		name[k++] = line[j];
 		j++;
 	}
 	name[k] = '\0';
-	val = get_env_value(name, envp);
-	res = strjoin_free(res, val);
 	*i = j;
+	return (name);
+}
+
+char	*expand_env_var(char *res, char *line, int *i, char **envp)
+{
+	char	*name;
+	char	*val;
+
+	name = extract_var_name(line, i);
+	if (!name)
+		return (res);
+	val = get_env_value(name, envp);
+	if (val)
+		res = strjoin_free(res, val);
+	else
+		res = strjoin_free(res, "");
+	free(name);
 	return (res);
 }
 
