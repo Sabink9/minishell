@@ -6,7 +6,7 @@
 /*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 14:46:34 by saciurus          #+#    #+#             */
-/*   Updated: 2025/11/10 16:11:47 by saciurus         ###   ########.fr       */
+/*   Updated: 2025/11/12 11:50:47 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ static void	child_exec(char *path, char **args, char **envp)
 	setup_child_signals();
 	execve(path, args, envp);
 	perror(args[0]);
-	_exit(126);
+	exit(126);
 }
 
 static int	wait_status_to_code(pid_t pid)
@@ -66,7 +66,7 @@ static int	wait_status_to_code(pid_t pid)
 		if (sig == SIGINT)
 			write(1, "\n", 1);
 		else if (sig == SIGQUIT)
-			write(2, "Quit: 3\n", 8);
+			write(2, "Quit: (core dumped)\n", 20);
 		return (128 + sig);
 	}
 	if (WIFEXITED(status))

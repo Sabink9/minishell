@@ -6,7 +6,7 @@
 /*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/06 20:00:26 by sab               #+#    #+#             */
-/*   Updated: 2025/11/11 15:44:24 by saciurus         ###   ########.fr       */
+/*   Updated: 2025/11/12 12:11:01 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,10 @@ static char	**copy_pipe_segment(char **split, int start, int end)
 	{
 		cmd[k] = ft_strdup(split[start]);
 		if (!cmd[k])
+		{
+			free_partial(cmd, k);
 			return (NULL);
+		}
 		k++;
 		start++;
 	}

@@ -6,7 +6,7 @@
 /*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/14 15:54:18 by saciurus          #+#    #+#             */
-/*   Updated: 2024/11/25 16:03:31 by saciurus         ###   ########.fr       */
+/*   Updated: 2025/11/12 12:10:26 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void	*ft_memcpy(void *dest, const void *src, size_t size)
 	unsigned char		*d;
 	size_t				i;
 
-	if (dest == NULL && src == NULL)
+	if (dest == NULL || src == NULL)
 		return (NULL);
 	d = (unsigned char *) dest;
 	s = (const unsigned char *) src;

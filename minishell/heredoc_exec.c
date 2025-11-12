@@ -6,7 +6,7 @@
 /*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 17:54:57 by saciurus          #+#    #+#             */
-/*   Updated: 2025/11/10 18:07:22 by saciurus         ###   ########.fr       */
+/*   Updated: 2025/11/12 12:18:41 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ static void	hd_child(int wfd, char *clean, char **envp, int *cfg)
 	st = hd_loop(wfd, clean, envp, cfg);
 	close(wfd);
 	free(clean);
-	_exit(st);
+	exit(st);
 }
 
 /* ---- parent wait ---- */
@@ -112,6 +112,5 @@ int	handle_heredoc(char *delim, char **envp, int last_exit)
 		return (-1);
 	cfg[0] = last_exit;
 	res = hd_fork_and_run(pfd, clean, envp, cfg);
-	free(clean);
 	return (res);
 }

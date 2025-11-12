@@ -6,7 +6,7 @@
 /*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 18:33:27 by saciurus          #+#    #+#             */
-/*   Updated: 2025/11/11 15:00:37 by saciurus         ###   ########.fr       */
+/*   Updated: 2025/11/12 12:07:59 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,10 +43,7 @@ static void	handle_cd_builtin(char **argv, char **envp, int *exit_status)
 static char	**handle_env_builtins(char **argv, char **envp, int *exit_status)
 {
 	char	**new_env;
-	char	**tmp;
 
-	new_env = envp;
-	tmp = NULL;
 	if (!ft_strcmp(argv[0], "export"))
 	{
 		new_env = ft_export(envp, argv, exit_status);
@@ -82,7 +79,6 @@ char	**handle_pipes(char **split, char **envp, int *exit_status)
 	cmdv = parse_pipes(split, &cmd_count);
 	if (!cmdv)
 	{
-		write(2, "minishell: syntax error near unexpected token `|'\n", 51);
 		*exit_status = 2;
 		g_sig = 0;
 		return (envp);

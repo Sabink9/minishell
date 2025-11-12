@@ -6,7 +6,7 @@
 /*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/14 18:54:15 by saciurus          #+#    #+#             */
-/*   Updated: 2024/11/21 16:47:57 by saciurus         ###   ########.fr       */
+/*   Updated: 2025/11/12 12:10:34 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void	*ft_memmove(void *dest, const void *src, size_t size)
 	unsigned char		*d;
 	size_t				i;
 
-	if (src == NULL && dest == NULL)
+	if (src == NULL || dest == NULL)
 		return (NULL);
 	s = (const unsigned char *) src;
 	d = (unsigned char *) dest;
