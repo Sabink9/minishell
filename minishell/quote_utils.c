@@ -6,7 +6,7 @@
 /*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 17:56:19 by saciurus          #+#    #+#             */
-/*   Updated: 2025/11/10 18:29:03 by saciurus         ###   ########.fr       */
+/*   Updated: 2025/11/12 20:02:37 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,6 @@ static int	should_write_quote(char *q, char c)
 	return (1);
 }
 
-/* copie s dans out en supprimant les quotes inutiles */
 static void	copy_unquoted(const char *s, char *out)
 {
 	int		i;
@@ -67,7 +66,6 @@ char	*unquote_token(const char *s)
 	return (out);
 }
 
-/* compte combien d'arguments non nuls sont présents */
 static int	count_valid_args(char **args)
 {
 	int	i;
@@ -84,7 +82,6 @@ static int	count_valid_args(char **args)
 	return (count);
 }
 
-/* duplique args en supprimant les NULL et les quotes */
 char	**compact_argv(char **args)
 {
 	int		i;

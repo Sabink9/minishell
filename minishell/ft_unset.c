@@ -3,17 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   ft_unset.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kberraho <kberraho@student.42.fr>          +#+  +:+       +#+        */
+/*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/06 20:00:18 by sab               #+#    #+#             */
-/*   Updated: 2025/11/11 17:54:29 by kberraho         ###   ########.fr       */
+/*   Updated: 2025/11/12 20:01:30 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../libft/libft.h"
 #include "mini.h"
 
-/* renvoie 1 si entry "NAME=..." matche exactement key "NAME" */
 static int	entry_matches_key(const char *entry, const char *key)
 {
 	int	i;
@@ -36,7 +35,6 @@ void	print_unset_error(const char *arg)
 	write(2, "': not a valid identifier\n", 26);
 }
 
-/* retire TOUTES les occurrences de key dans envp -> retourne un nouveau envp */
 static int	count_kept_entries(char **envp, const char *key)
 {
 	int	i;

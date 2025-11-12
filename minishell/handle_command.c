@@ -6,14 +6,13 @@
 /*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 18:33:27 by saciurus          #+#    #+#             */
-/*   Updated: 2025/11/12 12:07:59 by saciurus         ###   ########.fr       */
+/*   Updated: 2025/11/12 20:01:43 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../libft/libft.h"
 #include "mini.h"
 
-/* builtins simples : echo, pwd, exit, env */
 static void	handle_simple_builtins(char **argv, char **envp, int *exit_status)
 {
 	if (!ft_strcmp(argv[0], "echo"))
@@ -26,8 +25,6 @@ static void	handle_simple_builtins(char **argv, char **envp, int *exit_status)
 		ft_exit(argv, exit_status, 0);
 }
 
-/* export, cd, unset et commandes externes */
-/* cas particulier du builtin cd */
 static void	handle_cd_builtin(char **argv, char **envp, int *exit_status)
 {
 	if (argv[1] && argv[2])
@@ -39,7 +36,6 @@ static void	handle_cd_builtin(char **argv, char **envp, int *exit_status)
 		*exit_status = ft_cd(argv, envp);
 }
 
-/* export, cd, unset et commandes externes */
 static char	**handle_env_builtins(char **argv, char **envp, int *exit_status)
 {
 	char	**new_env;
@@ -59,7 +55,6 @@ static char	**handle_env_builtins(char **argv, char **envp, int *exit_status)
 	return (envp);
 }
 
-/* dispatch principal (< 25 lignes, 3 args) */
 char	**exec_builtin_or_cmd(char **argv, char **envp, int *exit_status)
 {
 	if (!ft_strcmp(argv[0], "echo") || !ft_strcmp(argv[0], "pwd")

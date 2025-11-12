@@ -6,7 +6,7 @@
 /*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 17:54:57 by saciurus          #+#    #+#             */
-/*   Updated: 2025/11/12 12:18:41 by saciurus         ###   ########.fr       */
+/*   Updated: 2025/11/12 20:00:12 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,8 +37,6 @@ static int	hd_loop(int wfd, char *clean, char **envp, int *cfg)
 	return (0);
 }
 
-/* ---- enfant très court ---- */
-
 static void	hd_child(int wfd, char *clean, char **envp, int *cfg)
 {
 	int	st;
@@ -50,8 +48,6 @@ static void	hd_child(int wfd, char *clean, char **envp, int *cfg)
 	free(clean);
 	exit(st);
 }
-
-/* ---- parent wait ---- */
 
 static int	hd_parent_wait(pid_t pid, int rfd)
 {
@@ -75,8 +71,6 @@ static int	hd_parent_wait(pid_t pid, int rfd)
 	return (rfd);
 }
 
-/* ---- fork + enchaînement compact ---- */
-
 static int	hd_fork_and_run(int pfd[2], char *clean, char **envp, int *cfg)
 {
 	pid_t	pid;
@@ -97,8 +91,6 @@ static int	hd_fork_and_run(int pfd[2], char *clean, char **envp, int *cfg)
 	close(pfd[1]);
 	return (hd_parent_wait(pid, pfd[0]));
 }
-
-/* ---- fonction principale (courte) ---- */
 
 int	handle_heredoc(char *delim, char **envp, int last_exit)
 {

@@ -6,7 +6,7 @@
 /*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/06 20:00:36 by sab               #+#    #+#             */
-/*   Updated: 2025/11/12 12:30:53 by saciurus         ###   ########.fr       */
+/*   Updated: 2025/11/12 20:03:56 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,8 @@ static char	*get_next_quote_input(char *line, char q)
 	tmp = readline("> ");
 	if (!tmp)
 	{
+		if (g_sig == SIGINT)
+			return (NULL);
 		printf("minishell: unexpected EOF while looking for matching `%c'\n",
 			q);
 		printf("minishell: syntax error: unexpected end of file\n");
@@ -50,14 +52,12 @@ static char	*get_next_quote_input(char *line, char q)
 	}
 	if (g_sig == SIGINT)
 	{
-		g_sig = 0;
 		free(tmp);
-		return (ft_strdup(""));
+		return (NULL);
 	}
 	return (tmp);
 }
 
-/* assemble la ligne courante + "\n" + la nouvelle saisie */
 static char	*read_next_quote_line(char *line, char q)
 {
 	char	*tmp;
@@ -83,7 +83,6 @@ static char	*read_next_quote_line(char *line, char q)
 	return (joined);
 }
 
-/* Boucle principale : relit tant qu’une quote reste ouverte */
 static char	*continue_line(char *line)
 {
 	char	q;
@@ -91,7 +90,7 @@ static char	*continue_line(char *line)
 
 	while (unclosed_quote(line))
 	{
-		q = unclosed_quote(line);
+		q = get_open_quote(line);
 		joined = read_next_quote_line(line, q);
 		if (!joined)
 			return (NULL);

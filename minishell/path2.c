@@ -6,7 +6,7 @@
 /*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 14:46:34 by saciurus          #+#    #+#             */
-/*   Updated: 2025/11/12 11:50:47 by saciurus         ###   ########.fr       */
+/*   Updated: 2025/11/12 20:02:17 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,8 +73,6 @@ static int	wait_status_to_code(pid_t pid)
 		return (WEXITSTATUS(status));
 	return (1);
 }
-
-/* ---------- exec_command (≤ 25 lignes) ---------- */
 
 int	exec_command(char **args, char **envp)
 {

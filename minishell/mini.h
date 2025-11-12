@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   mini.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kberraho <kberraho@student.42.fr>          +#+  +:+       +#+        */
+/*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/31 17:16:12 by saciurus          #+#    #+#             */
-/*   Updated: 2025/11/11 18:05:30 by kberraho         ###   ########.fr       */
+/*   Updated: 2025/11/12 20:04:30 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,4 +144,6 @@ char							**process_line(char *line, char **envp,
 									int *exit_status);
 int								is_n_flag(char *arg);
 int								count_pipes(char **split);
+char							*preprocess_redirs(char *line);
+char							get_open_quote(const char *s);
 #endif

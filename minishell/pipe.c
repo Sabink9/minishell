@@ -6,7 +6,7 @@
 /*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/06 20:00:31 by sab               #+#    #+#             */
-/*   Updated: 2025/11/11 15:42:30 by saciurus         ###   ########.fr       */
+/*   Updated: 2025/11/12 20:02:24 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,6 @@ static char	**prepare_argv(char **cmd, char **envp, int last_status)
 	return (argv2);
 }
 
-/* export + unset */
 static int	dispatch_env_builtins(char **argv2, char **envp)
 {
 	int		code;
@@ -60,7 +59,6 @@ static int	dispatch_env_builtins(char **argv2, char **envp)
 	return (-1);
 }
 
-/* dispatcher principal */
 int	builtin_dispatch(char **argv2, char **envp)
 {
 	int	code;

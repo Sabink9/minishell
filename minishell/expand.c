@@ -6,14 +6,13 @@
 /*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/06 19:59:50 by sab               #+#    #+#             */
-/*   Updated: 2025/11/11 20:15:33 by saciurus         ###   ########.fr       */
+/*   Updated: 2025/11/12 20:00:27 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../libft/libft.h"
 #include "mini.h"
 
-/* récupère la valeur d’une variable env */
 char	*get_env_value(const char *key, char **envp)
 {
 	int		i;
@@ -30,7 +29,6 @@ char	*get_env_value(const char *key, char **envp)
 	return (NULL);
 }
 
-/* expansion principale */
 char	*expand_exit_status(char *res, int *i, int last_exit)
 {
 	char	buf[12];

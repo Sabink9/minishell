@@ -40,7 +40,7 @@ LIBFT_DIR = ../libft
 LIBFT = $(LIBFT_DIR)/libft.a
 
 NAME = minishell
-LIBS = -L $(LIBFT_DIR) -lft -lreadline -lncurses
+LIBS = -L $(LIBFT_DIR) -lft -lreadline -ltinfo
 
 all: $(LIBFT) $(NAME)
 

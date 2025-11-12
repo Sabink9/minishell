@@ -6,7 +6,7 @@
 /*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/06 20:00:26 by sab               #+#    #+#             */
-/*   Updated: 2025/11/12 12:11:01 by saciurus         ###   ########.fr       */
+/*   Updated: 2025/11/12 20:02:09 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,6 @@ static char	***init_pipe_array(char **split, int *n)
 	return (cmdv);
 }
 
-/* découpe les segments de commandes séparés par | */
 char	***parse_pipes(char **split, int *n)
 {
 	int		i;

@@ -3,17 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   fill_main.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kberraho <kberraho@student.42.fr>          +#+  +:+       +#+        */
+/*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 18:45:34 by saciurus          #+#    #+#             */
-/*   Updated: 2025/11/11 17:54:07 by kberraho         ###   ########.fr       */
+/*   Updated: 2025/11/12 20:00:58 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../libft/libft.h"
 #include "mini.h"
 
-/* initialise l'environnement et la structure de base */
 char	**init_env(char **envp_sys)
 {
 	char	**envp;
@@ -28,7 +27,6 @@ char	**init_env(char **envp_sys)
 	return (envp);
 }
 
-/* gère les signaux et lignes vides */
 int	handle_empty_or_signal(char *line, int *exit_status)
 {
 	if (g_sig == SIGINT)
@@ -42,7 +40,6 @@ int	handle_empty_or_signal(char *line, int *exit_status)
 	return (0);
 }
 
-/* traite une ligne complète (quotes, expansion, split, exec) */
 char	**process_line(char *line, char **envp, int *exit_status)
 {
 	char	**split;
@@ -53,6 +50,9 @@ char	**process_line(char *line, char **envp, int *exit_status)
 	free(line);
 	line = tmp;
 	tmp = expand_variables(line, envp, *exit_status);
+	free(line);
+	line = tmp;
+	tmp = preprocess_redirs(line);
 	free(line);
 	line = tmp;
 	split = ft_split(line);

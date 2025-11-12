@@ -6,14 +6,13 @@
 /*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/06 20:00:49 by sab               #+#    #+#             */
-/*   Updated: 2025/11/11 10:21:41 by saciurus         ###   ########.fr       */
+/*   Updated: 2025/11/12 20:03:15 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "mini.h"
 #include "../libft/libft.h"
 
-/* ajoute un caractère à une chaîne et free l’ancienne */
 char	*strjoin_char_free(char *s, char c)
 {
 	int		len;
@@ -35,7 +34,6 @@ char	*strjoin_char_free(char *s, char c)
 	return (res);
 }
 
-/* concatène deux chaînes et free la première */
 char	*strjoin_free(char *s1, char *s2)
 {
 	int		len1;

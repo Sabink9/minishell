@@ -6,14 +6,13 @@
 /*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/06 20:00:16 by sab               #+#    #+#             */
-/*   Updated: 2025/11/11 11:50:20 by saciurus         ###   ########.fr       */
+/*   Updated: 2025/11/12 20:01:20 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../libft/libft.h"
 #include "mini.h"
 
-/* duplique brut le segment [start, end) SANS enlever les quotes */
 static char	*dup_raw(const char *s, int start, int end)
 {
 	char	*out;
@@ -31,7 +30,6 @@ static char	*dup_raw(const char *s, int start, int end)
 	return (out);
 }
 
-/* lit un token (mot avec quotes, ou '|' ) et l'ajoute dans tab */
 static int	push_tok(char **tab, int *count, char *tok)
 {
 	if (!tok)

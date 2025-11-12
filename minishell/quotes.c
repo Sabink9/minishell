@@ -6,14 +6,34 @@
 /*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/06 20:00:33 by sab               #+#    #+#             */
-/*   Updated: 2025/11/10 12:58:27 by saciurus         ###   ########.fr       */
+/*   Updated: 2025/11/12 20:04:06 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../libft/libft.h"
 #include "mini.h"
 
-/* pré-traite la ligne : supprime les quotes et marque les zones protégées */
+char	get_open_quote(const char *s)
+{
+	int		i;
+	char	q;
+
+	i = 0;
+	q = 0;
+	while (s[i])
+	{
+		if (s[i] == '\'' || s[i] == '"')
+		{
+			if (q == 0)
+				q = s[i];
+			else if (q == s[i])
+				q = 0;
+		}
+		i++;
+	}
+	return (q);
+}
+
 static void	update_quote_and_append(char **res, char c, char *q)
 {
 	if (*q == 0)

@@ -6,14 +6,13 @@
 /*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 12:29:33 by saciurus          #+#    #+#             */
-/*   Updated: 2025/11/10 12:54:51 by saciurus         ###   ########.fr       */
+/*   Updated: 2025/11/12 20:00:36 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../libft/libft.h"
 #include "mini.h"
 
-/* Gère le cas $? */
 static char	*handle_dollar_exit(char *res, char *line, int *i, int last_exit)
 {
 	if (line[*i + 1] == '?')
@@ -23,7 +22,6 @@ static char	*handle_dollar_exit(char *res, char *line, int *i, int last_exit)
 	return (res);
 }
 
-/* Gère $VAR ou '$' tout seul si pas de nom valide */
 static char	*handle_dollar_env(char *res, char *line, int *i, char **envp)
 {
 	if (line[*i + 1] && (ft_isalnum((unsigned char)line[*i + 1]) || line[*i

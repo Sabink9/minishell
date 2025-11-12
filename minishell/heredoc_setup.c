@@ -6,14 +6,12 @@
 /*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 17:57:06 by saciurus          #+#    #+#             */
-/*   Updated: 2025/11/11 11:46:49 by saciurus         ###   ########.fr       */
+/*   Updated: 2025/11/12 20:01:52 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../libft/libft.h"
 #include "mini.h"
-
-/* ---------- heredoc ---------- */
 
 void	remove_n_tokens(char **args, int pos, int n)
 {
@@ -69,7 +67,6 @@ static char	*delim_unquote(const char *s)
 	return (out);
 }
 
-/* avant: int handle_heredoc(char *delim) */
 int	hd_setup_pipe(int pfd[2], char *delim, char **clean, int *do_expand)
 {
 	*do_expand = !delim_is_quoted(delim);

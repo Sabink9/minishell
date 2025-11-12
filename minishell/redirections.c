@@ -6,14 +6,13 @@
 /*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/06 20:00:41 by sab               #+#    #+#             */
-/*   Updated: 2025/11/10 18:25:13 by saciurus         ###   ########.fr       */
+/*   Updated: 2025/11/12 14:12:57 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../libft/libft.h"
 #include "mini.h"
 
-/* -- "<file", ">file", ">>file" collés -- */
 static int	process_inline_redir(char **args, int i)
 {
 	int		append;
@@ -41,8 +40,6 @@ static int	process_inline_redir(char **args, int i)
 	return (1);
 }
 
-/* gère ">" et ">>" */
-/* gère ">" et ">>" (args[0] = "<" / ">" / ">>") */
 static int	fsfs(char **tok, char *fname)
 {
 	int	append;
@@ -53,7 +50,6 @@ static int	fsfs(char **tok, char *fname)
 	return (finish_file_redir(fname, 0, append));
 }
 
-/* "< token", "> token", ">> token" séparés */
 static int	process_pure_redir(char **args, int i, char **envp, int last_exit)
 {
 	char	*fname;
@@ -80,7 +76,6 @@ static int	process_pure_redir(char **args, int i, char **envp, int last_exit)
 	return (1);
 }
 
-/* vérifie et exécute une redirection sur un token */
 static int	exec_redir_token(char **args, int i, char **envp, int last_exit)
 {
 	int	rc;
@@ -95,7 +90,6 @@ static int	exec_redir_token(char **args, int i, char **envp, int last_exit)
 	return (rc);
 }
 
-/* boucle principale qui parcourt et gère toutes les redirections */
 int	handle_redirections(char **args, char **envp, int last_exit)
 {
 	int	i;

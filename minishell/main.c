@@ -3,17 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kberraho <kberraho@student.42.fr>          +#+  +:+       +#+        */
+/*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/06 20:00:23 by sab               #+#    #+#             */
-/*   Updated: 2025/11/11 17:56:39 by kberraho         ###   ########.fr       */
+/*   Updated: 2025/11/12 20:02:03 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../libft/libft.h"
 #include "mini.h"
 
-/* restaure et gère l’erreur de redirection */
 static char	**redir_error(int rc, int *exit_status, int *fd, char **envp)
 {
 	if (rc == -2)
@@ -24,7 +23,6 @@ static char	**redir_error(int rc, int *exit_status, int *fd, char **envp)
 	return (envp);
 }
 
-/* exécute une commande simple sans pipes */
 static char	**handle_simple_command(char **split, char **envp, int *exit_status)
 {
 	int		rc;
@@ -53,7 +51,6 @@ static char	**handle_simple_command(char **split, char **envp, int *exit_status)
 	return (new_env);
 }
 
-/* fonction principale (< 25 lignes, 3 arguments, 3 appels) */
 char	**handle_command(char **envp, char **split, int *exit_status)
 {
 	if (!split || !split[0])
@@ -63,7 +60,6 @@ char	**handle_command(char **envp, char **split, int *exit_status)
 	return (handle_simple_command(split, envp, exit_status));
 }
 
-/* fonction principale du shell */
 static void	run_shell_loop(char ***envp, int *exit_status)
 {
 	char	*line;
@@ -73,14 +69,13 @@ static void	run_shell_loop(char ***envp, int *exit_status)
 		line = read_full_line();
 		if (!line)
 		{
-			if (g_sig == 2)
+			if (g_sig == SIGINT)
 			{
-				*exit_status = 2;
+				*exit_status = 130;
 				g_sig = 0;
 				continue ;
 			}
 			printf("exit\n");
-			free(line);
 			break ;
 		}
 		if (handle_empty_or_signal(line, exit_status))

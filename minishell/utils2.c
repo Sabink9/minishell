@@ -6,7 +6,7 @@
 /*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/06 20:00:52 by sab               #+#    #+#             */
-/*   Updated: 2025/11/12 12:05:08 by saciurus         ###   ########.fr       */
+/*   Updated: 2025/11/12 20:03:20 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,6 @@ int	is_valid_identifier(const char *s)
 	return (1);
 }
 
-/* Restaure les stdin/stdout d’origine après exécution */
 int	restore_std_fds(int saved_in, int saved_out)
 {
 	dup2(saved_in, STDIN_FILENO);

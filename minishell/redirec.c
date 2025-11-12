@@ -6,7 +6,7 @@
 /*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 18:14:14 by saciurus          #+#    #+#             */
-/*   Updated: 2025/11/11 15:30:05 by saciurus         ###   ########.fr       */
+/*   Updated: 2025/11/12 20:03:35 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,4 +49,38 @@ int	finish_file_redir(char *fname, int is_in, int append)
 	if (r != 0)
 		return (-1);
 	return (0);
+}
+
+static void	add_redir_char(char *out, char *line, int *i, int *k)
+{
+	if (*k > 0 && out[*k - 1] != ' ')
+		out[(*k)++] = ' ';
+	out[(*k)++] = line[*i];
+	if (line[*i] == '>' && line[*i + 1] == '>')
+		out[(*k)++] = line[++(*i)];
+	if (line[*i + 1] && line[*i + 1] != ' ')
+		out[(*k)++] = ' ';
+}
+
+char	*preprocess_redirs(char *line)
+{
+	char	*out;
+	int		i;
+	int		k;
+
+	out = malloc(ft_strlen(line) * 2 + 1);
+	if (!out)
+		return (NULL);
+	i = 0;
+	k = 0;
+	while (line[i])
+	{
+		if (line[i] == '<' || line[i] == '>')
+			add_redir_char(out, line, &i, &k);
+		else
+			out[k++] = line[i];
+		i++;
+	}
+	out[k] = '\0';
+	return (out);
 }
