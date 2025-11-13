@@ -6,7 +6,7 @@
 /*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/31 17:16:12 by saciurus          #+#    #+#             */
-/*   Updated: 2025/11/13 10:39:51 by saciurus         ###   ########.fr       */
+/*   Updated: 2025/11/13 11:23:19 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,4 +152,9 @@ int								handle_redirections_loop(char **args,
 									char **envp, int last_exit, int *last_hd);
 int								exec_redir_token(char **args, int i,
 									char **envp, int last_exit);
+
+void							preprocess_loop(char *line, char *out);
+void							add_redir_char(char *out, char *line, int *i,
+									int *k);
+
 #endif
