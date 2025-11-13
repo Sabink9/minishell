@@ -6,7 +6,7 @@
 /*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/06 20:00:41 by sab               #+#    #+#             */
-/*   Updated: 2025/11/12 14:12:57 by saciurus         ###   ########.fr       */
+/*   Updated: 2025/11/13 10:36:37 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,8 @@ static int	process_pure_redir(char **args, int i, char **envp, int last_exit)
 	if (!args[i + 1] || !args[i + 1][0])
 	{
 		write(2,
-			"minishell: syntax error near unexpected token `newline'\n", 57);
+			"minishell: syntax error near unexpected token `newline'\n",
+			57);
 		return (-1);
 	}
 	fname = unquote_token(args[i + 1]);
@@ -76,40 +77,30 @@ static int	process_pure_redir(char **args, int i, char **envp, int last_exit)
 	return (1);
 }
 
-static int	exec_redir_token(char **args, int i, char **envp, int last_exit)
+int	exec_redir_token(char **args, int i, char **envp, int last_exit)
 {
-	int	rc;
-
-	if (!ft_strcmp(args[i], "<") || !ft_strcmp(args[i], ">")
-		|| !ft_strcmp(args[i], ">>") || !ft_strcmp(args[i], "<<"))
-		rc = process_pure_redir(args, i, envp, last_exit);
-	else if (args[i][0] == '<' || args[i][0] == '>')
-		rc = process_inline_redir(args, i);
-	else
-		rc = 0;
-	return (rc);
+	if (!ft_strcmp(args[i], "<<") || !ft_strcmp(args[i], ">>"))
+		return (process_pure_redir(args, i, envp, last_exit));
+	if (!ft_strcmp(args[i], "<") || !ft_strcmp(args[i], ">"))
+		return (process_pure_redir(args, i, envp, last_exit));
+	if (args[i][0] == '<' || args[i][0] == '>')
+		return (process_inline_redir(args, i));
+	return (0);
 }
 
 int	handle_redirections(char **args, char **envp, int last_exit)
 {
-	int	i;
+	int	last_hd;
 	int	rc;
 
-	i = 0;
-	while (args && args[i])
+	last_hd = -1;
+	rc = handle_redirections_loop(args, envp, last_exit, &last_hd);
+	if (rc == -1 || rc == -2)
+		return (rc);
+	if (last_hd != -1)
 	{
-		if ((ft_strchr(args[i], '\'') || ft_strchr(args[i], '"'))
-			&& !(args[i][0] == '<' || args[i][0] == '>'))
-		{
-			i++;
-			continue ;
-		}
-		rc = exec_redir_token(args, i, envp, last_exit);
-		if (rc == -2 || rc == -1)
-			return (rc);
-		if (rc == 1)
-			continue ;
-		i++;
+		dup2(last_hd, STDIN_FILENO);
+		close(last_hd);
 	}
 	return (0);
 }

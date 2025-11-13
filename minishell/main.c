@@ -6,7 +6,7 @@
 /*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/06 20:00:23 by sab               #+#    #+#             */
-/*   Updated: 2025/11/12 20:02:03 by saciurus         ###   ########.fr       */
+/*   Updated: 2025/11/13 10:27:45 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ char	**handle_command(char **envp, char **split, int *exit_status)
 	return (handle_simple_command(split, envp, exit_status));
 }
 
-static void	run_shell_loop(char ***envp, int *exit_status)
+void	run_shell_loop(char ***envp, int *exit_status)
 {
 	char	*line;
 
@@ -69,21 +69,11 @@ static void	run_shell_loop(char ***envp, int *exit_status)
 		line = read_full_line();
 		if (!line)
 		{
-			if (g_sig == SIGINT)
-			{
-				*exit_status = 130;
-				g_sig = 0;
-				continue ;
-			}
 			printf("exit\n");
 			break ;
 		}
-		if (handle_empty_or_signal(line, exit_status))
-		{
-			free(line);
+		if (process_loop_line(line, envp, exit_status))
 			continue ;
-		}
-		*envp = process_line(line, *envp, exit_status);
 	}
 }
 

@@ -6,7 +6,7 @@
 /*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 18:14:14 by saciurus          #+#    #+#             */
-/*   Updated: 2025/11/12 20:03:35 by saciurus         ###   ########.fr       */
+/*   Updated: 2025/11/13 10:33:39 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,15 +26,8 @@ int	apply_heredoc(char **args, int i, char **envp, int last_exit)
 	hd = handle_heredoc(args[i + 1], envp, last_exit);
 	if (hd == -1 || hd == -2)
 		return (hd);
-	if (dup2(hd, STDIN_FILENO) < 0)
-	{
-		perror("dup2");
-		close(hd);
-		return (-1);
-	}
-	close(hd);
 	remove_n_tokens(args, i, 2);
-	return (1);
+	return (hd);
 }
 
 int	finish_file_redir(char *fname, int is_in, int append)
@@ -55,11 +48,29 @@ static void	add_redir_char(char *out, char *line, int *i, int *k)
 {
 	if (*k > 0 && out[*k - 1] != ' ')
 		out[(*k)++] = ' ';
-	out[(*k)++] = line[*i];
+	if (line[*i] == '<' && line[*i + 1] == '<' && line[*i + 2] == '<')
+	{
+		out[(*k)++] = '<';
+		out[(*k)++] = '<';
+		out[(*k)++] = '<';
+		*i += 2;
+		return ;
+	}
+	if (line[*i] == '<' && line[*i + 1] == '<')
+	{
+		out[(*k)++] = '<';
+		out[(*k)++] = '<';
+		(*i)++;
+		return ;
+	}
 	if (line[*i] == '>' && line[*i + 1] == '>')
-		out[(*k)++] = line[++(*i)];
-	if (line[*i + 1] && line[*i + 1] != ' ')
-		out[(*k)++] = ' ';
+	{
+		out[(*k)++] = '>';
+		out[(*k)++] = '>';
+		(*i)++;
+		return ;
+	}
+	out[(*k)++] = line[*i];
 }
 
 char	*preprocess_redirs(char *line)
@@ -83,4 +94,28 @@ char	*preprocess_redirs(char *line)
 	}
 	out[k] = '\0';
 	return (out);
+}
+
+int	handle_redirections_loop(char **args, char **envp, int last_exit,
+		int *last_hd)
+{
+	int	i;
+	int	rc;
+
+	i = 0;
+	while (args && args[i])
+	{
+		rc = exec_redir_token(args, i, envp, last_exit);
+		if (rc == -1 || rc == -2)
+			return (rc);
+		if (rc > 1)
+		{
+			*last_hd = rc;
+			continue ;
+		}
+		if (rc == 1)
+			continue ;
+		i++;
+	}
+	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 18:45:34 by saciurus          #+#    #+#             */
-/*   Updated: 2025/11/12 20:00:58 by saciurus         ###   ########.fr       */
+/*   Updated: 2025/11/13 10:34:09 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,4 +61,25 @@ char	**process_line(char *line, char **envp, int *exit_status)
 	free_split(split);
 	free(line);
 	return (envp);
+}
+
+int	process_loop_line(char *line, char ***envp, int *exit_status)
+{
+	if (g_sig == SIGINT)
+	{
+		*exit_status = 130;
+		g_sig = 0;
+	}
+	if (line[0] == '\0')
+	{
+		free(line);
+		return (1);
+	}
+	if (handle_empty_or_signal(line, exit_status))
+	{
+		free(line);
+		return (1);
+	}
+	*envp = process_line(line, *envp, exit_status);
+	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: saciurus <saciurus@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/31 17:16:12 by saciurus          #+#    #+#             */
-/*   Updated: 2025/11/12 20:04:30 by saciurus         ###   ########.fr       */
+/*   Updated: 2025/11/13 10:39:51 by saciurus         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,4 +146,10 @@ int								is_n_flag(char *arg);
 int								count_pipes(char **split);
 char							*preprocess_redirs(char *line);
 char							get_open_quote(const char *s);
+int								process_loop_line(char *line, char ***envp,
+									int *exit_status);
+int								handle_redirections_loop(char **args,
+									char **envp, int last_exit, int *last_hd);
+int								exec_redir_token(char **args, int i,
+									char **envp, int last_exit);
 #endif
